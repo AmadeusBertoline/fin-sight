@@ -27,7 +27,6 @@ public class AtivoController {
 	private final ObjectProperty<BigDecimal> valorCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
 	private ObjectProperty<LocalDate> dataCompra = new SimpleObjectProperty<>(LocalDate.now());
 	private ObservableList<Ativo> lista = FXCollections.observableArrayList();
-	private final ObjectProperty<BigDecimal> totalInvestido = new SimpleObjectProperty<>(BigDecimal.ZERO);
 	//passar o valor para dentro da property
 	
 	private AtivoDAO dao = new AtivoDAOImpl();
@@ -39,8 +38,8 @@ public class AtivoController {
 	public StringProperty tipoProperty() {return tipo;}
 	public StringProperty quantidadeProperty() {return quantidade;}
 	public ObjectProperty<BigDecimal> valorCompraProperty() {return valorCompra;}
-	public ObjectProperty<LocalDate> datProperty() {return dataCompra;}
-	public ObjectProperty<BigDecimal> totalInvestidoProperty() {return totalInvestido;}
+	public ObjectProperty<LocalDate> dataProperty() {return dataCompra;}
+
 	
 	public String getTicker() {
 		return ticker.get();
@@ -61,21 +60,13 @@ public class AtivoController {
 			return BigDecimal.ZERO;
 		}
 	}
-	
-	public BigDecimal getTotalInvestido() {
-		try {
-			return valorCompra.get();
-		}catch(Exception e){
-			return BigDecimal.ZERO;
-		}
-	}
+
 	
 	public Ativo paraEntidade() {
 		
 		Ativo a = new Ativo();
 		a.setNome(nome.get());
 		a.setTicker(ticker.get());
-		a.setQuantidade(BigDecimal.valueOf(getQuantidade()));
 		a.setValorCompra(valorCompra.get());
 		
 		return a;
@@ -83,11 +74,10 @@ public class AtivoController {
 	}
 	
 	public void paraTela(Ativo a) {
-		
+
 		id.set(a.getId());
 		ticker.set(a.getTicker());
 		nome.set(a.getNome());
-		quantidade.set(String.valueOf(a.getQuantidade()));
 		valorCompra.set((a.getValorCompra()));
 		
 	}
@@ -142,6 +132,10 @@ public class AtivoController {
 	
 	public BigDecimal totalGeral() {
 		return dao.totalGeral();
+	}
+	
+	public long quantidadeAtivos() {
+		return dao.quantidadeAtivos();
 	}
 	
 

@@ -13,4 +13,5 @@ public interface AtivoDAO {
 	void excluir(long id);
 	List<Ativo> pesquisarPorNome(String nome);
 	BigDecimal totalGeral();
+	long quantidadeAtivos();
 }

@@ -1,19 +1,19 @@
 package view;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.List;
 
-import controller.AtivoController;
+import controller.CompraController;
+import dao.AtivoDAOImpl;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,31 +23,30 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import model.Ativo;
+import model.Compra;
 
 public class ViewAtivos {
 
-	private TextField txtId = new TextField("Id");
-	private TextField txtTicker = new TextField("Ticker");
-	private TextField txtNome = new TextField("Nome");
-	private TextField txtTipo = new TextField("Tipo");
-	private TextField txtQuantidade = new TextField("Quantidade");
-	private TextField txtValorCompra = new TextField("Valor da Compra");
-	private TextField txtDataCompra = new TextField("Data");
-	private TextField txtTotalInvestido = new TextField("Total Investido");
-	private TextField txtQuantidadeAtivos = new TextField("Quantidade de Ativos");
-	private TextField txtPrecoMedioAtivo = new TextField("Preço médio do ativo");
+	private TextField txtValorUnitario = new TextField();
+	private TextField txtTicker = new TextField();
+	private TextField txtEmpresa = new TextField();
+	private TextField txtTipo = new TextField();
+	private TextField txtQuantidade = new TextField();
+	private TextField txtValorCompra = new TextField();
+	private TextField txtDataCompra = new TextField();
+	private ComboBox<Ativo> cbAtivos = new ComboBox<>();
 	private Button btnSalvar = new Button("Salvar");
 	private Button btnLimpar = new Button("Limpar");
 	private Button btnPesquisar = new Button("Pesquisar");
 	private Button btnExcluir = new Button("Excluir");
+	private Button btnEditar = new Button("Editar");
 
-	private TableView<Ativo> table = new TableView<>();
+	private TableView<Compra> table = new TableView<>();
+	private CompraController control = new CompraController();
+	private AtivoDAOImpl ativoDAO = new AtivoDAOImpl();
 
-	private AtivoController control = new AtivoController();
-
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings("unchecked")
 	public Pane render() {
 
 		GridPane pane = new GridPane();
@@ -56,224 +55,243 @@ public class ViewAtivos {
 		pane.setVgap(10);
 		pane.setAlignment(Pos.CENTER);
 
-		txtId.setEditable(false);
-		txtId.setDisable(true);
-		txtId.setVisible(false);
-		txtId.setManaged(false);
+		cbAtivos.setConverter(new javafx.util.StringConverter<Ativo>() {
+			@Override
+			public String toString(Ativo ativo) {
 
-//		pane.add(new Label("ID:"), 0, 0);
-		pane.add(txtId, 1, 0);
+				return (ativo == null) ? "" : ativo.getTicker();
+			}
 
-		pane.add(new Label("Ticker"), 0, 1);
-		pane.add(txtTicker, 1, 1);
+			@Override
+			public Ativo fromString(String string) {
+				return null;
+			}
+		});
 
-		pane.add(new Label("Nome"), 0, 2);
-		pane.add(txtNome, 1, 2);
+		// listener da combobox
+		cbAtivos.getSelectionModel().selectedItemProperty().addListener((observable, antigo, novoAtivo) -> {
+			if (novoAtivo != null) {
 
-		pane.add(new Label("Tipo"), 0, 3);
-		pane.add(txtTipo, 1, 3);
+				txtEmpresa.setText(novoAtivo.getNome());
+				txtTipo.setText(novoAtivo.getTipo());
+				control.valorUnitarioProperty().set(novoAtivo.getValorCompra());
 
-		pane.add(new Label("Quantidade"), 0, 4);
-		pane.add(txtQuantidade, 1, 4);
+			} else {
 
-		pane.add(new Label("Valor da compra"), 0, 5);
+				txtTicker.clear();
+				txtTipo.clear();
+			}
+		});
+
+		List<Ativo> listaDeAtivos = ativoDAO.listar();
+		cbAtivos.getItems().addAll(listaDeAtivos);
+		txtValorCompra.setEditable(false);
+		txtValorCompra.setFocusTraversable(false);
+		txtValorCompra.setStyle("-fx-background-color: #e0e0e0;");
+		txtValorUnitario.setEditable(false);
+		txtEmpresa.setEditable(false);
+		txtTipo.setEditable(false);
+
+		// Inputs
+		pane.add(new Label("Ativo:"), 0, 0);
+		pane.add(cbAtivos, 1, 0);
+
+		pane.add(new Label("Empresa:"), 0, 1);
+		pane.add(txtEmpresa, 1, 1);
+
+		pane.add(new Label("Quantidade:"), 0, 2);
+		pane.add(txtQuantidade, 1, 2);
+
+		pane.add(new Label("Valor unitário:"), 0, 3);
+		pane.add(txtValorUnitario, 1, 3);
+
+		pane.add(new Label("Tipo:"), 0, 4);
+		pane.add(txtTipo, 1, 4);
+
+		pane.add(new Label("Valor da compra:"), 0, 5);
 		pane.add(txtValorCompra, 1, 5);
 
+		pane.add(new Label("Data (dd/mm/aaaa):"), 0, 6);
+		pane.add(txtDataCompra, 1, 6);
+
+		HBox hBotoes = new HBox(10, btnSalvar, btnEditar, btnLimpar, btnPesquisar, btnExcluir);
+		pane.add(hBotoes, 1, 7);
+		
+		
+
+		txtValorCompra.textProperty().bind(Bindings.createStringBinding(() -> {
+			BigDecimal valor = control.valorCompraProperty().get();
+
+			if (valor == null)
+				return "0.00";
+
+			return valor.setScale(2, java.math.RoundingMode.HALF_UP).toString();
+		}, control.valorCompraProperty()));
+
+		// bindings
+		Bindings.bindBidirectional(txtQuantidade.textProperty(), control.quantidadeProperty(),
+				new javafx.util.converter.BigDecimalStringConverter() {
+					@Override
+					public BigDecimal fromString(String value) {
+						if (value == null || value.isBlank())
+							return BigDecimal.ZERO;
+
+						value = value.replace(",", ".");
+
+						return new BigDecimal(value);
+					}
+				});
+//
+//		Bindings.bindBidirectional(txtValorCompra.textProperty(), control.valorCompraProperty(),
+//				new javafx.util.converter.BigDecimalStringConverter());
+
+		Bindings.bindBidirectional(txtDataCompra.textProperty(), control.dataCompraProperty(),
+				new javafx.util.converter.LocalDateStringConverter(DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+						DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+		Bindings.bindBidirectional(txtValorUnitario.textProperty(), control.valorUnitarioProperty(),
+				new javafx.util.converter.BigDecimalStringConverter() {
+					@Override
+					public BigDecimal fromString(String value) {
+						if (value == null || value.isBlank())
+							return BigDecimal.ZERO;
+
+						value = value.replace(",", ".");
+
+						return new BigDecimal(value);
+					}
+				});
+
+		Bindings.bindBidirectional(cbAtivos.valueProperty(), control.ativoProperty());
+		Bindings.bindBidirectional(txtEmpresa.textProperty(), control.empresaProperty());
+
 		// botões
-		HBox hBotoes = new HBox(10);
-
-		hBotoes.getChildren().addAll(btnSalvar, btnLimpar, btnPesquisar, btnExcluir);
-		pane.add(hBotoes, 1, 6);
-
-		Bindings.bindBidirectional(txtId.textProperty(), control.idProperty(),
-				new javafx.util.converter.NumberStringConverter());
-		Bindings.bindBidirectional(txtTicker.textProperty(), control.tickerProperty());
-		Bindings.bindBidirectional(txtNome.textProperty(), control.nomeProperty());
-		Bindings.bindBidirectional(txtTipo.textProperty(), control.tipoProperty());
-		Bindings.bindBidirectional(txtQuantidade.textProperty(), control.quantidadeProperty());
-		Bindings.bindBidirectional(txtValorCompra.textProperty(), control.valorCompraProperty(),
-				new javafx.util.converter.BigDecimalStringConverter());
-		
-		//bind do total investido
-		Bindings.bindBidirectional(txtTotalInvestido.textProperty(), control.totalInvestidoProperty(), new javafx.util.converter.BigDecimalStringConverter());
-		
-		// botão de salvar
 		btnSalvar.setOnAction(e -> {
 
-			Ativo a = control.paraEntidade();
-			String dataString = txtDataCompra.getText();
-
-			control.salvar(a, dataString);
-
-			System.out.println("Ativo cadastrado com sucesso!");
-
-			txtId.clear();
-			txtTicker.clear();
-			txtNome.clear();
-			txtTipo.clear();
-			txtQuantidade.clear();
-			txtValorCompra.clear();
-			txtDataCompra.clear();
-
+			Compra c = control.paraEntidade();
+			control.salvar(c, txtDataCompra.getText(), control.ativoProperty().get());
+			control.limparCampos();
 		});
 
-		// botao de excluir
 		btnExcluir.setOnAction(e -> {
-
-			long id = control.idProperty().get();
-
-			if (id > 0) {
-				control.excluir(id);
-				txtId.clear();
-				txtTicker.clear();
-				txtNome.clear();
-				txtTipo.clear();
-				txtQuantidade.clear();
-				txtValorCompra.clear();
-				txtDataCompra.clear();
-
-				System.out.println("Ativo excluído com sucesso");
-			} else {
-				System.out.println("Selecione um ativo para excluir");
+			Compra selecionada = table.getSelectionModel().getSelectedItem();
+			if (selecionada != null) {
+				control.excluir(selecionada.getId());
+				control.limparCampos();
 			}
-
 		});
 
-		// botão de pesquisar
-		btnPesquisar.setOnAction(e -> {
+		btnEditar.setOnAction(e -> {
 
-			String nome = txtNome.getText();
-			control.pesquisar(nome);
-
-		});
-
-		// botão de limpar os campos
-		btnLimpar.setOnAction(e -> {
-
-			txtId.clear();
-			txtNome.clear();
-			txtTicker.clear();
-			txtTipo.clear();
-			txtQuantidade.clear();
-			txtValorCompra.clear();
-			txtDataCompra.clear();
-
-			table.getSelectionModel().clearSelection();
-
+			txtQuantidade.setEditable(true);
+			txtDataCompra.setEditable(true);
+			Compra c = control.paraEntidade();
+			control.atualizar(c, c.getId());
 			control.atualizarLista();
-
+			control.limparCampos();
+			
 		});
-
-		BorderPane panePrincipal = new BorderPane();
-
-		TableColumn<Ativo, String> colNome = new TableColumn<>("Nome");
-		colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-
-		TableColumn<Ativo, String> colTicker = new TableColumn<>("Ticker");
-		colTicker.setCellValueFactory(new PropertyValueFactory<>("ticker"));
-
-		TableColumn<Ativo, String> colTipo = new TableColumn<>("Tipo");
-		colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-
-		TableColumn<Ativo, Double> colQuantidade = new TableColumn<>("Quantidade");
-		colQuantidade.setCellValueFactory(new PropertyValueFactory<>("Quantidade"));
-
-		TableColumn<Ativo, BigDecimal> colValor = new TableColumn<>("Valor");
-		colValor.setCellValueFactory(new PropertyValueFactory<>("valorCompra"));
-
-		TableColumn<Ativo, LocalDate> colData = new TableColumn<>("Data");
-		colData.setCellValueFactory(new PropertyValueFactory<>("dataCompra"));
 		
-		TableColumn<Ativo, BigDecimal> colTotal = new TableColumn<>("Total da Compra");
-		colTotal.setCellValueFactory(new PropertyValueFactory<>("totalCompra"));
-		
-		colTotal.setCellFactory(column -> new TableCell<Ativo, BigDecimal>() {
-		    // Configura o formato para o padrão brasileiro (R$)
-		    private final NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-
-		    @Override
-		    protected void updateItem(BigDecimal item, boolean empty) {
-		        super.updateItem(item, empty);
-		        
-		        if (empty || item == null) {
-		            setText(null);
-		        } else {
-		            // Aplica a formatação e define o texto da célula
-		            setText(format.format(item));
-		        }
-		    }
-		});
-
-		colData.setCellFactory(col -> new TableCell<Ativo, LocalDate>() {
-
-			private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-			protected void updateItem(LocalDate item, boolean empty) {
-
-				super.updateItem(item, empty);
-				if (empty || item == null) {
-					setText(null);
-				} else {
-					setText(dtf.format(item));
-				}
-
-			}
-
+		btnLimpar.setOnAction(e ->{
+			
+			control.limparCampos();
+			
 		});
 
 		table.getColumns().clear();
-		table.getColumns().addAll(colNome, colTicker, colTipo, colQuantidade, colValor, colData, colTotal);
+		// as colunas irão ocupar todo o espaço disponível
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
-		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		// adicionando listener na tabela para a função de editar
+		table.getSelectionModel().selectedItemProperty().addListener((obs, old, selecionado) -> {
 
+			if (selecionado != null) {
+				control.idProperty().set(selecionado.getId());
+				control.quantidadeProperty().set(selecionado.getQuantidade());
+				control.dataCompraProperty().set(selecionado.getDataCompra());
+
+				if (selecionado.getAtivo() != null) {
+					control.valorUnitarioProperty().set(selecionado.getAtivo().getValorCompra());
+					control.ativoProperty().set(selecionado.getAtivo());
+				}
+
+			}
+		});
+
+		// Configuração da Tabela
+		TableColumn<Compra, String> colNome = new TableColumn<>("Nome Ativo");
+		colNome.setCellValueFactory(data -> {
+			Compra compra = data.getValue();
+			if (compra.getAtivo() != null) {
+				return new javafx.beans.property.SimpleStringProperty(compra.getAtivo().getNome());
+			} else {
+				return new javafx.beans.property.SimpleStringProperty("");
+			}
+		});
+
+		TableColumn<Compra, String> colTicker = new TableColumn<>("Ticker");
+		colTicker.setCellValueFactory(data -> {
+			Compra compra = data.getValue();
+			if (compra.getAtivo() != null) {
+				return new javafx.beans.property.SimpleStringProperty(compra.getAtivo().getTicker());
+			} else {
+				return new javafx.beans.property.SimpleStringProperty("");
+			}
+		});
+
+		TableColumn<Compra, BigDecimal> colQuantidade = new TableColumn<>("Qtd");
+		colQuantidade.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
+
+		TableColumn<Compra, BigDecimal> colValorUnitario = new TableColumn<>("Preço Unit.");
+		colValorUnitario.setCellValueFactory(cellData -> {
+			Compra c = cellData.getValue();
+			Ativo a = c.getAtivo();
+
+			if (a != null && a.getValorCompra() != null) {
+				return new ReadOnlyObjectWrapper<>(a.getValorCompra());
+			}
+
+			return new ReadOnlyObjectWrapper<>(BigDecimal.ZERO);
+		});
+
+		TableColumn<Compra, String> colTipo = new TableColumn<>("Tipo");
+		colTipo.setCellValueFactory(cellData -> {
+			Compra c = cellData.getValue();
+			Ativo a = c.getAtivo();
+
+			if (a != null && a.getValorCompra() != null) {
+				return new ReadOnlyObjectWrapper<>(a.getTipo());
+			}
+
+			return new ReadOnlyObjectWrapper<>("");
+		});
+
+		TableColumn<Compra, LocalDate> colData = new TableColumn<>("Data");
+		colData.setCellValueFactory(new PropertyValueFactory<>("dataCompra"));
+
+		// Formatação de Data
+		colData.setCellFactory(col -> new TableCell<>() {
+			private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+			protected void updateItem(LocalDate item, boolean empty) {
+				super.updateItem(item, empty);
+				setText(empty || item == null ? null : dtf.format(item));
+			}
+		});
+
+		TableColumn<Compra, BigDecimal> colTotal = new TableColumn<>("Total");
+		colTotal.setCellValueFactory(new PropertyValueFactory<>("valorCompra"));
+
+		table.getColumns().addAll(colNome, colTicker, colQuantidade, colValorUnitario, colTipo, colData, colTotal);
 		table.setItems(control.getLista());
-		
-		BigDecimal totalGeral = control.totalGeral();
-		
-		NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-		String valorFormatado = format.format(totalGeral);
-		
-		// dashboard
-		GridPane gridDash = new GridPane();
-		gridDash.setPadding(new Insets(20));
-		VBox dash = new VBox(10);
-		dash.setPadding(new Insets(20));
-		dash.setStyle("-fx-background-color: #e8e8e8;");
-		dash.getChildren().add(gridDash);
-		gridDash.add(new Label("RESUMO DA CARTEIRA"), 1, 1);
-		gridDash.add(new Label("Total Investido: "), 1, 2);
-		gridDash.add(new Label(valorFormatado), 2, 2);
-		gridDash.add(new Label("Quantidade Ativos: "), 1, 3);
-		gridDash.add(new Label(""), 2, 3);
-		gridDash.add(new Label("Preço médio por ativo: "), 1, 4);
-		gridDash.add(new Label(""), 2, 4);
-		
-		txtTotalInvestido.setEditable(false);
-		
 
-		// navegação
-		TabPane tabPane = new TabPane();
-
-		Tab tabAtivos = new Tab("Lista de Ativos");
-		tabAtivos.setContent(table);
-		tabAtivos.setClosable(false);
-
-		Tab tabDash = new Tab("Dashboard");
-		tabDash.setContent(dash);
-		tabDash.setClosable(false);
-
-		tabPane.getTabs().addAll(tabAtivos, tabDash);
-
-		// panePrincipal.setRight(dash);
-
+		BorderPane panePrincipal = new BorderPane();
 		panePrincipal.setTop(pane);
-		panePrincipal.setBottom(table);
-		panePrincipal.setCenter(tabPane);
+		panePrincipal.setCenter(table);
 
 		control.atualizarLista();
 
 		return panePrincipal;
-
 	}
 
 }

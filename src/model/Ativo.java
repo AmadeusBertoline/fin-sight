@@ -6,20 +6,19 @@ import java.util.Objects;
 
 public class Ativo {
 	
-	private long id;
+	private int id;
 	private String ticker;
 	private String nome;
 	private String tipo;
-	private BigDecimal quantidade;
 	private BigDecimal valorCompra;
 	private LocalDate dataCompra = LocalDate.now();
 	
 	
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -47,22 +46,12 @@ public class Ativo {
         this.tipo = tipo;
     }
 
-    public BigDecimal getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(BigDecimal quantidade) {
-        this.quantidade = quantidade;
-    }
 
     public BigDecimal getValorCompra() {
         return valorCompra;
     }
     
-    public BigDecimal getTotalCompra() {
-    	//BigDecimal qtd = BigDecimal.valueOf(this.quantidade);
-    	return this.valorCompra.multiply(this.quantidade);
-    }
+    
     
 
     public void setValorCompra(BigDecimal valorCompra) {
@@ -79,7 +68,7 @@ public class Ativo {
     
    
     public int hashCode() {
-    	return Objects.hash(getId(), getNome(), getTipo(), getQuantidade(), getValorCompra(), getDataCompra());
+    	return Objects.hash(getId(), getNome(), getTipo(), getValorCompra(), getDataCompra());
     }
     
     
@@ -90,7 +79,6 @@ public class Ativo {
     	sb.append(getNome() + " - ");
     	sb.append(getTicker() + " - ");
     	sb.append(getTipo() + " - ");
-    	sb.append(getQuantidade() + " - ");
     	sb.append(getValorCompra() + " - ");
     	sb.append(getDataCompra() + " - ");
     	
@@ -108,7 +96,6 @@ public class Ativo {
     				obj.getNome() == getNome()&&
     				obj.getTicker() == getTicker()&&
     				obj.getTipo() == getTipo()&&
-    				obj.getQuantidade() == getQuantidade()&&
     				obj.getValorCompra() == getValorCompra()&&
     				obj.getDataCompra() == getDataCompra();    		
     	}else {
