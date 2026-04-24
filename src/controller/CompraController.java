@@ -34,6 +34,7 @@ public class CompraController {
 	private final ObjectProperty<BigDecimal> valorCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
 	private final ObjectProperty<BigDecimal> valorUnitario = new SimpleObjectProperty<>(BigDecimal.ZERO);
 	private final StringProperty empresa = new SimpleStringProperty("");
+	private final StringProperty pesquisa = new SimpleStringProperty("");
 
 	public CompraController() {
 
@@ -48,11 +49,15 @@ public class CompraController {
 
 	private CompraDAOImpl dao = new CompraDAOImpl();
 	private ObservableList<Compra> lista = FXCollections.observableArrayList();
-	
+
 	public IntegerProperty idProperty() {
 		return id;
 	}
-	
+
+	public StringProperty pesquisaProperty() {
+		return pesquisa;
+	}
+
 	public StringProperty empresaProperty() {
 		return empresa;
 	}
@@ -72,8 +77,8 @@ public class CompraController {
 	public ObjectProperty<LocalDate> dataCompraProperty() {
 		return dataCompra;
 	}
-	
-	public ObjectProperty<Ativo> ativoProperty(){
+
+	public ObjectProperty<Ativo> ativoProperty() {
 		return ativo;
 	}
 
@@ -85,6 +90,21 @@ public class CompraController {
 		c.setValorCompra(valorCompra.get());
 		c.setDataCompra(dataCompra.get());
 		return c;
+	}
+
+	public void paraTela(Compra c) {
+
+		id.set(c.getId());
+		ativo.set(c.getAtivo());
+		quantidade.set(c.getQuantidade());
+		dataCompra.set(c.getDataCompra());
+
+		if (c.getAtivo() != null) {
+			valorUnitario.set(c.getAtivo().getValorCompra());
+		} else {
+			valorUnitario.set(BigDecimal.ZERO);
+		}
+
 	}
 
 	public void salvar(Compra c, String dataString, Ativo a) {
@@ -106,11 +126,16 @@ public class CompraController {
 		}
 
 		atualizarLista();
+		limparCampos();
 	}
 
 	public void excluir(int id) {
 		if (id > 0) {
 			dao.excluir(id);
+			atualizarLista();
+			limparCampos();
+		} else {
+			System.out.println("Selecione um item para excluir");
 		}
 	}
 
@@ -122,18 +147,29 @@ public class CompraController {
 	public ObservableList<Compra> getLista() {
 		return lista;
 	}
-	
+
 	public void limparCampos() {
-	    ativo.set(null); 
-	    quantidade.set(BigDecimal.ZERO); 
-	    dataCompra.set(LocalDate.now()); 
-	    valorUnitario.set(BigDecimal.ZERO); 
-	    empresa.set("");
+		ativo.set(null);
+		id.set(0);
+		quantidade.set(BigDecimal.ZERO);
+		dataCompra.set(LocalDate.now());
+		valorUnitario.set(BigDecimal.ZERO);
+		empresa.set("");
+		pesquisa.set("");
 	}
-	
+
 	public void atualizar(Compra c, int id) {
-		
+
 		dao.atualizar(c, id);
-		
+		atualizarLista();
+		limparCampos();
+
+	}
+
+	public void busca() {
+
+		lista.clear();
+		lista.addAll(dao.busca(pesquisa.get()));
+
 	}
 }

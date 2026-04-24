@@ -10,4 +10,5 @@ public interface CompraDAO {
 	List<Compra> listar();
 	void atualizar(Compra c, int id);
 	void excluir(int id);
+	List<Compra> busca(String nome);
 }

@@ -6,9 +6,10 @@ import java.time.format.DateTimeFormatter;
 
 import dao.AtivoDAO;
 import dao.AtivoDAOImpl;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -17,127 +18,150 @@ import javafx.collections.ObservableList;
 import model.Ativo;
 
 public class AtivoController {
-	
-	//propertys para fazer bindings nos TextFields
-	private final LongProperty id = new SimpleLongProperty(0);
+
+	// propertys para fazer bindings nos TextFields
+	private final IntegerProperty id = new SimpleIntegerProperty(0);
 	private final StringProperty ticker = new SimpleStringProperty("");
 	private final StringProperty nome = new SimpleStringProperty("");
 	private final StringProperty tipo = new SimpleStringProperty("");
 	private final StringProperty quantidade = new SimpleStringProperty("");
 	private final ObjectProperty<BigDecimal> valorCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
-	private ObjectProperty<LocalDate> dataCompra = new SimpleObjectProperty<>(LocalDate.now());
+	private final StringProperty pesquisa = new SimpleStringProperty();
 	private ObservableList<Ativo> lista = FXCollections.observableArrayList();
-	//passar o valor para dentro da property
-	
-	private AtivoDAO dao = new AtivoDAOImpl();
-	
-	//retorno da PROPRIEDADE
-	public LongProperty idProperty() {return id;}
-	public StringProperty tickerProperty() {return ticker;}
-	public StringProperty nomeProperty() {return nome;}
-	public StringProperty tipoProperty() {return tipo;}
-	public StringProperty quantidadeProperty() {return quantidade;}
-	public ObjectProperty<BigDecimal> valorCompraProperty() {return valorCompra;}
-	public ObjectProperty<LocalDate> dataProperty() {return dataCompra;}
+	// passar o valor para dentro da property
 
-	
+	private AtivoDAO dao = new AtivoDAOImpl();
+
+	// retorno da PROPRIEDADE
+	public IntegerProperty idProperty() {
+		return id;
+	}
+
+	public StringProperty tickerProperty() {
+		return ticker;
+	}
+
+	public StringProperty nomeProperty() {
+		return nome;
+	}
+
+	public StringProperty tipoProperty() {
+		return tipo;
+	}
+
+	public StringProperty quantidadeProperty() {
+		return quantidade;
+	}
+
+	public ObjectProperty<BigDecimal> valorCompraProperty() {
+		return valorCompra;
+	}
+
+	public StringProperty pesquisaProperty() {
+		return pesquisa;
+	}
+
 	public String getTicker() {
 		return ticker.get();
 	}
-	
+
 	public String getNome() {
 		return ticker.get();
 	}
-	
+
 	public double getQuantidade() {
 		return Double.parseDouble(quantidade.get());
 	}
-	
+
 	public BigDecimal getValorCompra() {
 		try {
 			return valorCompra.get();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return BigDecimal.ZERO;
 		}
 	}
 
-	
 	public Ativo paraEntidade() {
-		
+
 		Ativo a = new Ativo();
+		a.setId(id.get());
 		a.setNome(nome.get());
+		a.setTipo(tipo.get());
 		a.setTicker(ticker.get());
 		a.setValorCompra(valorCompra.get());
-		
+
 		return a;
-		
+
 	}
-	
+
 	public void paraTela(Ativo a) {
 
 		id.set(a.getId());
 		ticker.set(a.getTicker());
 		nome.set(a.getNome());
+		tipo.set(a.getTipo());
 		valorCompra.set((a.getValorCompra()));
-		
+
 	}
-	
-	public void salvar(Ativo a, String dataString) {
-		
-		if(a.getId() == 0) {
+
+	public void salvar(Ativo a) {
+
+		if (a.getId() == 0) {
 			dao.salvar(a);
-		}else {
+		} else {
 			dao.atualizar(a, a.getId());
-		}
-		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		
-		try{
 			
-			LocalDate data = LocalDate.parse(dataString, dtf);
-			a.setDataCompra(data);
-			
-		}catch(Exception e) {
-			System.out.println("Data inválida, use o formato dd/MM/yyyy");
 		}
-		
+
 		atualizarLista();
-		
+		limparCampos();
+
 	}
 	
-	public void atualizarLista() {
+	public void atualizar(Ativo a, int id) {
 		
+		dao.atualizar(a, id);
+		atualizarLista();
+		limparCampos();
+		
+	}
+
+	public void atualizarLista() {
+
 		lista.clear();
 		lista.addAll(dao.listar());
-		
+
 	}
-	
-	public ObservableList<Ativo> getLista(){
+
+	public ObservableList<Ativo> getLista() {
 		return lista;
 	}
-	
-	public void excluir(long id){
-		
-		dao.excluir(id);
-		atualizarLista();
-		
+
+	public void excluir(int id) {
+
+		if (dao.ativoEmUso(id) == false) {
+			dao.excluir(id);
+			atualizarLista();
+		} else {
+			System.out.println("Você não pode excluir um ativo que já foi registrado em uma compra");
+		}
+
 	}
 
 	public Ativo pesquisar(String nome) {
-		
+
 		Ativo a = new Ativo();
-	
+
 		return a;
 	}
-	
-	public BigDecimal totalGeral() {
-		return dao.totalGeral();
-	}
-	
-	public long quantidadeAtivos() {
-		return dao.quantidadeAtivos();
-	}
-	
 
-	
+	public void limparCampos() {
+		id.set(0);
+		ticker.set("");
+		nome.set("");
+		tipo.set("");
+		valorCompra.set(null);
+		pesquisa.set("");
+	}
+
 }

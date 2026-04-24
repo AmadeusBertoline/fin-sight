@@ -12,10 +12,9 @@ import java.util.List;
 import model.Ativo;
 
 public class AtivoDAOImpl implements AtivoDAO {
-	
+
 	ConnectionFactory conexao = new ConnectionFactory();
 	Connection con = conexao.getConnection();
-	
 
 	@Override
 	public void salvar(Ativo a) {
@@ -67,16 +66,16 @@ public class AtivoDAOImpl implements AtivoDAO {
 	}
 
 	@Override
-	public void atualizar(Ativo a, long id) {
+	public void atualizar(Ativo a, int id) {
 
 		try {
-			String sql = "UPDATE ativos SET nome=?, ticker=?, tipo=?, valor_unitario=? " + "WHERE id=?";
+			String sql = "UPDATE ativos SET nome_empresa=?, ticker=?, tipo=?, valor_unitario=? " + "WHERE id=?";
 			PreparedStatement pst = con.prepareStatement(sql);
 			pst.setString(1, a.getNome());
 			pst.setString(2, a.getTicker());
 			pst.setString(3, a.getTipo());
 			pst.setBigDecimal(4, a.getValorCompra());
-			pst.setLong(5, a.getId());
+			pst.setInt(5, a.getId());
 
 			pst.executeUpdate();
 
@@ -87,12 +86,12 @@ public class AtivoDAOImpl implements AtivoDAO {
 	}
 
 	@Override
-	public void excluir(long id) {
+	public void excluir(int id) {
 
 		try {
 			String sql = "DELETE FROM ativos WHERE id=?";
 			PreparedStatement pst = con.prepareStatement(sql);
-			pst.setLong(1, id);
+			pst.setInt(1, id);
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -133,31 +132,25 @@ public class AtivoDAOImpl implements AtivoDAO {
 	}
 
 	@Override
-	public BigDecimal totalGeral() {
-
-		return BigDecimal.ZERO;
-
-	}
-
-	@Override
-	public long quantidadeAtivos() {
-
-		long quantidade = 0;
+	public boolean ativoEmUso(int id) {
 
 		try {
 
-			String sql = "SELECT COUNT(id) as quantidade FROM ativos;";
+			String sql = "SELECT COUNT(*) FROM compras WHERE idAtivo = ?";
 			PreparedStatement pst = con.prepareStatement(sql);
+			pst.setInt(1, id);
 			ResultSet res = pst.executeQuery();
 
-			while (res.next()) {
-				quantidade = res.getLong("quantidade");
+			if (res.next()) {
+				int count = res.getInt(1);
+				return count > 0;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return quantidade;
+		return false;
 	}
+
 }

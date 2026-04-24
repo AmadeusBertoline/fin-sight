@@ -9,9 +9,8 @@ public interface AtivoDAO {
 	
 	void salvar(Ativo a);
 	List<Ativo> listar();
-	void atualizar(Ativo a, long id);
-	void excluir(long id);
+	void atualizar(Ativo a, int id);
+	void excluir(int id);
 	List<Ativo> pesquisarPorNome(String nome);
-	BigDecimal totalGeral();
-	long quantidadeAtivos();
+	boolean ativoEmUso(int id);
 }
