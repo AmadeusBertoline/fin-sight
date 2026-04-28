@@ -1,8 +1,6 @@
 package view;
 
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
-
 import controller.AtivoController;
 import dao.AtivoDAOImpl;
 import javafx.beans.binding.Bindings;
@@ -19,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import model.Ativo;
+import util.Alerta;
 
 public class ViewAtivos {
 
@@ -112,10 +111,9 @@ public class ViewAtivos {
 			Ativo selecionado = table.getSelectionModel().getSelectedItem();
 
 			if (selecionado != null) {
-				
 				control.excluir(selecionado.getId());
 			} else {
-				System.out.println("Selecione um item para excluir");
+				Alerta.erro("Erro", "Selecione um ativo para excluir");
 			}
 
 		});

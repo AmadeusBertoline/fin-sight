@@ -14,8 +14,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -27,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import model.Ativo;
 import model.Compra;
+import util.Alerta;
 
 public class ViewCompras {
 
@@ -42,13 +41,11 @@ public class ViewCompras {
 	private Button btnSalvar = new Button("Salvar");
 	private Button btnLimpar = new Button("Limpar");
 	private Button btnExcluir = new Button("Excluir");
-	private Button btnEditar = new Button("Editar");
 
 	private TableView<Compra> table = new TableView<>();
 	private CompraController control = new CompraController();
 	private AtivoDAOImpl ativoDAO = new AtivoDAOImpl();
 
-	@SuppressWarnings("unchecked")
 	public Pane render() {
 
 		GridPane pane = new GridPane();
@@ -199,8 +196,8 @@ public class ViewCompras {
 			Compra selecionada = table.getSelectionModel().getSelectedItem();
 			if (selecionada != null) {
 				control.excluir(selecionada.getId());
-				control.limparCampos();
-				control.atualizarLista();
+			} else {
+				Alerta.erro("Erro", "Selecione uma compra para excluir");
 			}
 		});
 
@@ -245,16 +242,7 @@ public class ViewCompras {
 		});
 
 		TableColumn<Compra, BigDecimal> colValorUnitario = new TableColumn<>("Preço Unit.");
-		colValorUnitario.setCellValueFactory(cellData -> {
-			Compra c = cellData.getValue();
-			Ativo a = c.getAtivo();
-
-			if (a != null && a.getValorCompra() != null) {
-				return new ReadOnlyObjectWrapper<>(a.getValorCompra());
-			}
-
-			return new ReadOnlyObjectWrapper<>(BigDecimal.ZERO);
-		});
+		colValorUnitario.setCellValueFactory(new PropertyValueFactory<>("valorPago"));
 
 		TableColumn<Compra, String> colTipo = new TableColumn<>("Tipo");
 		colTipo.setCellValueFactory(cellData -> {

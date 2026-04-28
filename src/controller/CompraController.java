@@ -3,27 +3,19 @@ package controller;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
 import dao.CompraDAOImpl;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import model.Ativo;
 import model.Compra;
+import util.Alerta;
 
 public class CompraController {
 
@@ -89,6 +81,7 @@ public class CompraController {
 		c.setQuantidade(quantidade.get());
 		c.setValorCompra(valorCompra.get());
 		c.setDataCompra(dataCompra.get());
+		c.setValorPago(valorUnitario.get());
 		return c;
 	}
 
@@ -98,6 +91,7 @@ public class CompraController {
 		ativo.set(c.getAtivo());
 		quantidade.set(c.getQuantidade());
 		dataCompra.set(c.getDataCompra());
+		valorUnitario.set(c.getValorPago());
 
 		if (c.getAtivo() != null) {
 			valorUnitario.set(c.getAtivo().getValorCompra());
@@ -130,13 +124,22 @@ public class CompraController {
 	}
 
 	public void excluir(int id) {
+
 		if (id > 0) {
-			dao.excluir(id);
-			atualizarLista();
-			limparCampos();
+
+			boolean confirmou = Alerta.confirmar("Excluir compra", "Tem certeza de que deseja excluir essa compra?");
+
+			if (confirmou) {
+				dao.excluir(id);
+				Alerta.sucesso("Sucesso", "Compra removida com sucesso");
+				atualizarLista();
+				limparCampos();
+			}
+
 		} else {
-			System.out.println("Selecione um item para excluir");
+			Alerta.erro("Erro", "Compra inválida");
 		}
+
 	}
 
 	public void atualizarLista() {

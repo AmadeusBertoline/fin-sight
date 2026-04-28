@@ -13,18 +13,21 @@ public class ViewPrincipal extends Application {
 
 		ViewCompras viewCompras = new ViewCompras();
 		ViewAtivos viewAtivos = new ViewAtivos();
+		ViewDashboard viewDashboard = new ViewDashboard();
 
 		TabPane tabPane = new TabPane();
 
 		Tab tabCompras = new Tab("Compras", viewCompras.render());
 		Tab tabAtivos = new Tab("Ativos", viewAtivos.render());
+		Tab tabDashboard = new Tab("Dashboard", viewDashboard.render());
 
 		tabCompras.setClosable(false);
 		tabAtivos.setClosable(false);
 
-		tabPane.getTabs().addAll(tabCompras, tabAtivos);
+		tabPane.getTabs().addAll(tabCompras, tabAtivos, tabDashboard);
 
 		Scene scn = new Scene(tabPane, 800, 600);
+		
 		stage.setTitle("Carteira de Investimentos");
 		stage.setScene(scn);
 		stage.show();

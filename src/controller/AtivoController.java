@@ -1,13 +1,9 @@
 package controller;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import dao.AtivoDAO;
 import dao.AtivoDAOImpl;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,6 +12,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Ativo;
+import util.Alerta;
 
 public class AtivoController {
 
@@ -110,20 +107,20 @@ public class AtivoController {
 			dao.salvar(a);
 		} else {
 			dao.atualizar(a, a.getId());
-			
+
 		}
 
 		atualizarLista();
 		limparCampos();
 
 	}
-	
+
 	public void atualizar(Ativo a, int id) {
-		
+
 		dao.atualizar(a, id);
 		atualizarLista();
 		limparCampos();
-		
+
 	}
 
 	public void atualizarLista() {
@@ -139,11 +136,19 @@ public class AtivoController {
 
 	public void excluir(int id) {
 
+		boolean confirmou = Alerta.confirmar("Excluir Ativo", "Tem certeza que deseja excluir o ativo?");
+
 		if (dao.ativoEmUso(id) == false) {
-			dao.excluir(id);
-			atualizarLista();
+
+			if (confirmou) {
+				dao.excluir(id);
+				Alerta.sucesso("Sucesso", "Ativo removido com sucesso");
+				atualizarLista();
+				limparCampos();
+			}
+
 		} else {
-			System.out.println("Você não pode excluir um ativo que já foi registrado em uma compra");
+			Alerta.erro("Erro", "Você não pode excluir um ativo que já foi registrado em uma compra");
 		}
 
 	}

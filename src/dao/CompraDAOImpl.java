@@ -19,12 +19,13 @@ public class CompraDAOImpl implements CompraDAO {
 
 		try {
 
-			String sql = "INSERT INTO compras(idAtivo, dataCompra, valor_compra, quantidade) VALUES(?,?,?,?)";
+			String sql = "INSERT INTO compras(idAtivo, dataCompra, valor_compra, quantidade, valor_unitario) VALUES(?,?,?,?,?)";
 			PreparedStatement pst = con.prepareStatement(sql);
 			pst.setInt(1, c.getAtivo().getId());
 			pst.setDate(2, java.sql.Date.valueOf(c.getDataCompra()));
 			pst.setBigDecimal(3, c.getValorCompra());
 			pst.setBigDecimal(4, c.getQuantidade());
+			pst.setBigDecimal(5, c.getValorPago());
 			pst.executeUpdate();
 
 		} catch (Exception e) {
@@ -40,7 +41,7 @@ public class CompraDAOImpl implements CompraDAO {
 
 		try {
 
-			String sql = "SELECT c.*, a.nome_empresa, a.id, a.ticker, a.tipo, a.valor_unitario FROM Compras c "
+			String sql = "SELECT c.*, a.nome_empresa, a.id, a.ticker, a.tipo FROM Compras c "
 					+ "INNER JOIN ativos a ON c.idAtivo = a.id ORDER BY c.idCompra DESC";
 			PreparedStatement pst = con.prepareStatement(sql);
 			ResultSet res = pst.executeQuery();
@@ -52,6 +53,7 @@ public class CompraDAOImpl implements CompraDAO {
 				c.setQuantidade(res.getBigDecimal("quantidade"));
 				c.setDataCompra(res.getDate("dataCompra").toLocalDate());
 				c.setValorCompra(res.getBigDecimal("valor_compra"));
+				c.setValorPago(res.getBigDecimal("valor_unitario"));
 				
 				Ativo a = new Ativo();
 				a.setId(res.getInt("id"));
@@ -77,14 +79,15 @@ public class CompraDAOImpl implements CompraDAO {
 
 		try {
 
-			String sql = "UPDATE compras SET idAtivo = ?, dataCompra = ?, valor_compra = ?, quantidade = ? "
+			String sql = "UPDATE compras SET idAtivo = ?, dataCompra = ?, valor_compra = ?, quantidade = ?, valor_unitario = ? "
 					+ "WHERE idCompra = ?";
 			PreparedStatement pst = con.prepareStatement(sql);
 			pst.setInt(1, c.getAtivo().getId());
 			pst.setDate(2, java.sql.Date.valueOf(c.getDataCompra()));
 			pst.setBigDecimal(3, c.getValorCompra());
 			pst.setBigDecimal(4, c.getQuantidade());
-			pst.setInt(5, id);
+			pst.setBigDecimal(5, c.getValorPago());
+			pst.setInt(6, id);
 			pst.executeUpdate();
 
 		} catch (Exception e) {
@@ -118,7 +121,7 @@ public class CompraDAOImpl implements CompraDAO {
 		
 		try {
 			
-			String sql = "SELECT c.*, a.id, a.nome_empresa, a.ticker, a.tipo, a.valor_unitario FROM compras c "
+			String sql = "SELECT c.*, a.id, a.nome_empresa, a.ticker, a.tipo FROM compras c "
 					+ " INNER JOIN ativos a ON c.idAtivo = a.id WHERE a.nome_empresa LIKE ?";
 			
 			PreparedStatement pst = con.prepareStatement(sql);
@@ -132,6 +135,7 @@ public class CompraDAOImpl implements CompraDAO {
 				c.setQuantidade(res.getBigDecimal("quantidade"));
 				c.setDataCompra(res.getDate("dataCompra").toLocalDate());
 				c.setValorCompra(res.getBigDecimal("valor_compra"));
+				c.setValorPago(res.getBigDecimal("valor_unitario"));
 				
 				Ativo a = new Ativo();
 				a.setId(res.getInt("id"));
