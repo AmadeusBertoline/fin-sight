@@ -12,70 +12,74 @@ import view.components.Card;
 
 public class ViewDashboard {
 
+	private Card totalCard;
+	private Card valorizacaoCard;
+	private Card desvalorizacaoCard;
+	private PieChart pieChart;
+	private ListView<String> topAtivos;
 
-    private Card totalCard;
-    private Card valorizacaoCard;
-    private Card desvalorizacaoCard;
+	public Pane render() {
+		VBox root = new VBox(20);
+		root.setPadding(new Insets(20));
+		root.getStyleClass().add("dashboard-root");
+		root.setFillWidth(true);
 
-    public Pane render() {
+		Label titulo = new Label("Dashboard");
+		titulo.getStyleClass().add("label-title");
 
-        VBox root = new VBox(20);
-        root.setPadding(new Insets(20)); 
-        root.getStyleClass().add("dashboard-root"); 
-        root.setFillWidth(true);
+		HBox cards = new HBox(20);
 
-        Label titulo = new Label("Dashboard");
-        titulo.getStyleClass().add("label-title");
+		this.totalCard = new Card("Total Investido", "R$ 0,00");
+		this.valorizacaoCard = new Card("Valorização", "0,00%");
+		this.desvalorizacaoCard = new Card("Desvalorização", "0,00%");
 
-        HBox cards = new HBox(20);
+		totalCard.setMaxWidth(Double.MAX_VALUE);
+		valorizacaoCard.setMaxWidth(Double.MAX_VALUE);
+		desvalorizacaoCard.setMaxWidth(Double.MAX_VALUE);
+		HBox.setHgrow(totalCard, Priority.ALWAYS);
+		HBox.setHgrow(valorizacaoCard, Priority.ALWAYS);
+		HBox.setHgrow(desvalorizacaoCard, Priority.ALWAYS);
 
-        this.totalCard = new Card("Total Investido", "R$ 0,00");
-        this.valorizacaoCard = new Card("Valorização", "0%");
-        this.desvalorizacaoCard = new Card("Desvalorização", "0%");
+		cards.getChildren().addAll(totalCard, valorizacaoCard, desvalorizacaoCard);
 
-        totalCard.setMaxWidth(Double.MAX_VALUE);
-        valorizacaoCard.setMaxWidth(Double.MAX_VALUE);
-        desvalorizacaoCard.setMaxWidth(Double.MAX_VALUE);
+		this.pieChart = new PieChart();
+		this.pieChart.setTitle("Distribuição por Tipo");
+		this.pieChart.setPrefWidth(400);
 
-        HBox.setHgrow(totalCard, Priority.ALWAYS);
-        HBox.setHgrow(valorizacaoCard, Priority.ALWAYS);
-        HBox.setHgrow(desvalorizacaoCard, Priority.ALWAYS);
+		this.topAtivos = new ListView<>();
+		HBox.setHgrow(this.topAtivos, Priority.ALWAYS);
 
-        cards.getChildren().addAll(totalCard, valorizacaoCard, desvalorizacaoCard);
+		HBox content = new HBox(20, this.pieChart, this.topAtivos);
+		VBox.setVgrow(content, Priority.ALWAYS);
 
-        PieChart pieChart = new PieChart();
-        pieChart.setTitle("Distribuição por Tipo");
+		root.getChildren().addAll(titulo, cards, content);
 
-        pieChart.getData().addAll(
-            new PieChart.Data("Ações", 50),
-            new PieChart.Data("FIIs", 30),
-            new PieChart.Data("Tesouro", 20)
-        );
+		try {
+			root.getStylesheets().add(getClass().getResource("/resources/css/dashboard.css").toExternalForm());
+		} catch (Exception e) {
+			System.err.println("Erro ao carregar CSS da Dashboard: " + e.getMessage());
+		}
 
-        pieChart.setPrefWidth(400);
+		return root;
+	}
 
-        ListView<String> topAtivos = new ListView<>();
-        topAtivos.getItems().addAll(
-            "PETR4 - 100 cotas",
-            "VALE3 - 80 cotas",
-            "MXRF11 - 60 cotas"
-        );
+	public Card getTotalCard() {
+		return totalCard;
+	}
 
-        HBox.setHgrow(topAtivos, Priority.ALWAYS);
+	public Card getValorizacaoCard() {
+		return valorizacaoCard;
+	}
 
-        HBox content = new HBox(20, pieChart, topAtivos);
-        VBox.setVgrow(content, Priority.ALWAYS); 
+	public Card getDesvalorizacaoCard() {
+		return desvalorizacaoCard;
+	}
 
-        root.getChildren().addAll(titulo, cards, content);
+	public PieChart getPieChart() {
+		return pieChart;
+	}
 
-        root.getStylesheets().add(
-            getClass().getResource("/resources/css/dashboard.css").toExternalForm()
-        );
-
-        return root;
-    }
-
-    public Card getTotalCard() { return totalCard; }
-    public Card getValorizacaoCard() { return valorizacaoCard; }
-    public Card getDesvalorizacaoCard() { return desvalorizacaoCard; }
+	public ListView<String> getTopAtivosList() {
+		return topAtivos;
+	}
 }

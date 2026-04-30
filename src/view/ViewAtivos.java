@@ -2,7 +2,7 @@ package view;
 
 import java.math.BigDecimal;
 import controller.AtivoController;
-import dao.AtivoDAOImpl;
+import dao.ativo.AtivoDAOImpl;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,7 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import model.Ativo;
-import util.Alerta;
+import view.components.Alerta;
 
 public class ViewAtivos {
 
@@ -62,6 +62,14 @@ public class ViewAtivos {
 		HBox botoes = new HBox(10, btnSalvar, btnLimpar, btnExcluir);
 		pane.add(botoes, 1, 7);
 
+		txtPesquisa.textProperty().addListener((obs, antigo, novo) -> {
+
+			if (novo != null) {
+				control.pesquisar(novo);
+			}
+
+		});
+
 		Bindings.bindBidirectional(txtTicker.textProperty(), control.tickerProperty());
 		Bindings.bindBidirectional(txtEmpresa.textProperty(), control.nomeProperty());
 		Bindings.bindBidirectional(txtTipo.textProperty(), control.tipoProperty());
@@ -69,12 +77,15 @@ public class ViewAtivos {
 				new javafx.util.converter.BigDecimalStringConverter() {
 					@Override
 					public BigDecimal fromString(String value) {
-						if (value == null || value.isBlank())
-							return BigDecimal.ZERO;
-
-						value = value.replace(",", ".");
-
-						return new BigDecimal(value);
+						try {
+							if (value == null || value.isBlank()) {
+								return BigDecimal.ZERO;
+							}
+							String limpando = value.replace(",", ".");
+							return new BigDecimal(limpando);
+						} catch (NumberFormatException e) {
+							return null;
+						}
 					}
 				});
 

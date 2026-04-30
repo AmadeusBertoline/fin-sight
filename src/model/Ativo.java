@@ -10,12 +10,16 @@ public class Ativo {
 	private String nome;
 	private String tipo;
 	private BigDecimal valorCompra;
+	private BigDecimal quantidadeTotal;
 
 	public int getId() {
 		return id;
 	}
 
 	public void setId(int id) {
+		if (id < 0) {
+			throw new IllegalArgumentException("Id inválido");
+		}
 		this.id = id;
 	}
 
@@ -24,6 +28,9 @@ public class Ativo {
 	}
 
 	public void setTicker(String ticker) {
+		if (ticker == null || ticker.isBlank()) {
+			throw new IllegalArgumentException("Ticker inválido");
+		}
 		this.ticker = ticker;
 	}
 
@@ -32,6 +39,9 @@ public class Ativo {
 	}
 
 	public void setNome(String nome) {
+		if (nome == null || nome.isBlank()) {
+			throw new IllegalArgumentException("Nome inválido");
+		}
 		this.nome = nome;
 	}
 
@@ -40,6 +50,9 @@ public class Ativo {
 	}
 
 	public void setTipo(String tipo) {
+		if (tipo == null || tipo.isBlank()) {
+			throw new IllegalArgumentException("Tipo inválido");
+		}
 		this.tipo = tipo;
 	}
 
@@ -48,38 +61,44 @@ public class Ativo {
 	}
 
 	public void setValorCompra(BigDecimal valorCompra) {
+		if (valorCompra == null || valorCompra.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Valor de compra inválido");
+		}
 		this.valorCompra = valorCompra;
 	}
 
-	public int hashCode() {
-		return Objects.hash(getId(), getNome(), getTipo(), getValorCompra());
+	public BigDecimal getQuantidadeTotal() {
+		return quantidadeTotal;
 	}
 
-	public String toString() {
-
-		StringBuffer sb = new StringBuffer();
-		sb.append(getId() + " - ");
-		sb.append(getNome() + " - ");
-		sb.append(getTicker() + " - ");
-		sb.append(getTipo() + " - ");
-		sb.append(getValorCompra() + " - ");
-
-		return sb.toString();
-
-	}
-
-	public boolean equals(Object o) {
-
-		if (o instanceof Ativo) {
-			Ativo obj = (Ativo) o;
-
-			return obj.getId() == getId() && obj.getNome() == getNome() && obj.getTicker() == getTicker()
-					&& obj.getTipo() == getTipo() && obj.getValorCompra() == getValorCompra();
-
-		} else {
-			return false;
+	public void setQuantidadeTotal(BigDecimal quantidadeTotal) {
+		if (quantidadeTotal == null || quantidadeTotal.compareTo(BigDecimal.ZERO) < 0) {
+			throw new IllegalArgumentException("Quantidade inválida");
 		}
-
+		this.quantidadeTotal = quantidadeTotal;
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getId()).append(" - ");
+		sb.append(getNome()).append(" - ");
+		sb.append(getTicker()).append(" - ");
+		sb.append(getTipo()).append(" - ");
+		sb.append(getValorCompra()).append(" - ");
+		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Ativo)) return false;
+		Ativo ativo = (Ativo) o;
+		return id == ativo.id;
+	}
 }

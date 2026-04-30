@@ -1,5 +1,8 @@
 package view;
 
+import controller.ControllerDashboard;
+import dao.dashboard.DashboarDAOImpl;
+import dao.dashboard.DashboardDAO;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
@@ -15,20 +18,32 @@ public class ViewPrincipal extends Application {
 		ViewAtivos viewAtivos = new ViewAtivos();
 		ViewDashboard viewDashboard = new ViewDashboard();
 
+		var rootDashboard = viewDashboard.render();
+
+		DashboardDAO dashboardDao = new DashboarDAOImpl();
+		ControllerDashboard dashboardController = new ControllerDashboard(viewDashboard, dashboardDao);
+
 		TabPane tabPane = new TabPane();
 
 		Tab tabCompras = new Tab("Compras", viewCompras.render());
 		Tab tabAtivos = new Tab("Ativos", viewAtivos.render());
-		Tab tabDashboard = new Tab("Dashboard", viewDashboard.render());
+		Tab tabDashboard = new Tab("Dashboard", rootDashboard);
 
 		tabCompras.setClosable(false);
 		tabAtivos.setClosable(false);
+		tabDashboard.setClosable(false);
 
 		tabPane.getTabs().addAll(tabCompras, tabAtivos, tabDashboard);
 
-		Scene scn = new Scene(tabPane, 800, 600);
-		
-		stage.setTitle("Carteira de Investimentos");
+		tabDashboard.setOnSelectionChanged(event -> {
+			if (tabDashboard.isSelected()) {
+				dashboardController.carregarDados();
+			}
+		});
+
+		Scene scn = new Scene(tabPane, 1000, 700);
+
+		stage.setTitle("Carteira de Investimentos - Amadeus");
 		stage.setScene(scn);
 		stage.show();
 	}
@@ -36,5 +51,4 @@ public class ViewPrincipal extends Application {
 	public static void main(String[] args) {
 		Application.launch();
 	}
-
 }

@@ -1,8 +1,10 @@
 package controller;
 
 import java.math.BigDecimal;
-import dao.AtivoDAO;
-import dao.AtivoDAOImpl;
+import java.sql.SQLException;
+
+import dao.ativo.AtivoDAO;
+import dao.ativo.AtivoDAOImpl;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -12,11 +14,10 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Ativo;
-import util.Alerta;
+import view.components.Alerta;
 
 public class AtivoController {
 
-	// propertys para fazer bindings nos TextFields
 	private final IntegerProperty id = new SimpleIntegerProperty(0);
 	private final StringProperty ticker = new SimpleStringProperty("");
 	private final StringProperty nome = new SimpleStringProperty("");
@@ -25,11 +26,9 @@ public class AtivoController {
 	private final ObjectProperty<BigDecimal> valorCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
 	private final StringProperty pesquisa = new SimpleStringProperty();
 	private ObservableList<Ativo> lista = FXCollections.observableArrayList();
-	// passar o valor para dentro da property
 
 	private AtivoDAO dao = new AtivoDAOImpl();
 
-	// retorno da PROPRIEDADE
 	public IntegerProperty idProperty() {
 		return id;
 	}
@@ -103,30 +102,86 @@ public class AtivoController {
 
 	public void salvar(Ativo a) {
 
-		if (a.getId() == 0) {
-			dao.salvar(a);
-		} else {
-			dao.atualizar(a, a.getId());
-
+		if (valorCompra.get() == null) {
+			Alerta.erro("Entrada Inválida",
+					"O campo Valor contém caracteres inválidos. Use apenas números e ponto/vírgula.");
+			return;
 		}
 
-		atualizarLista();
-		limparCampos();
+		if (a.getTicker() == null || a.getTicker().isBlank()) {
+			Alerta.erro("Validação", "O campo Ticker é obrigatório.");
+			return;
+		}
 
+		if (a.getNome() == null || a.getNome().isBlank()) {
+			Alerta.erro("Validação", "O campo Nome é obrigatório.");
+			return;
+		}
+
+		if (a.getTipo() == null || a.getTipo().isBlank()) {
+			Alerta.erro("Validação", "O campo Tipo é obrigatório.");
+			return;
+		}
+
+		if (a.getValorCompra().compareTo(BigDecimal.ZERO) < 0) {
+			Alerta.erro("Validação", "O valor unitário não pode ser negativo.");
+			return;
+		}
+
+		try {
+			if (a.getId() == 0) {
+				dao.salvar(a);
+				Alerta.sucesso("Sucesso", "Ativo salvo com sucesso!");
+			} else {
+				dao.atualizar(a, a.getId());
+				Alerta.sucesso("Sucesso", "Ativo atualizado com sucesso!");
+			}
+
+			atualizarLista();
+			limparCampos();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
+		}
 	}
 
 	public void atualizar(Ativo a, int id) {
 
-		dao.atualizar(a, id);
-		atualizarLista();
-		limparCampos();
+		if (a.getTicker() == null || a.getTicker().isBlank() || a.getNome() == null || a.getNome().isBlank()) {
+			Alerta.erro("Validação", "Preencha todos os campos obrigatórios.");
+			return;
+		}
+
+		try {
+
+			dao.atualizar(a, id);
+			Alerta.sucesso("Sucesso", "Ativo atualizado com sucesso!");
+			atualizarLista();
+			limparCampos();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
+		}
 
 	}
 
 	public void atualizarLista() {
 
-		lista.clear();
-		lista.addAll(dao.listar());
+		try {
+			lista.clear();
+			lista.addAll(dao.listar());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
+		}
 
 	}
 
@@ -136,28 +191,45 @@ public class AtivoController {
 
 	public void excluir(int id) {
 
-		boolean confirmou = Alerta.confirmar("Excluir Ativo", "Tem certeza que deseja excluir o ativo?");
+		try {
 
-		if (dao.ativoEmUso(id) == false) {
-
-			if (confirmou) {
-				dao.excluir(id);
-				Alerta.sucesso("Sucesso", "Ativo removido com sucesso");
-				atualizarLista();
-				limparCampos();
+			if (id <= 0) {
+				Alerta.erro("Erro", "Selecione um ativo válido para exclusão.");
+				return;
 			}
 
-		} else {
-			Alerta.erro("Erro", "Você não pode excluir um ativo que já foi registrado em uma compra");
-		}
+			boolean confirmou = Alerta.confirmar("Excluir Ativo", "Tem certeza que deseja excluir o ativo?");
 
+			if (confirmou) {
+				if (dao.ativoEmUso(id) == false) {
+					dao.excluir(id);
+					Alerta.sucesso("Sucesso", "Ativo removido com sucesso");
+					atualizarLista();
+					limparCampos();
+				} else {
+					Alerta.erro("Erro", "Você não pode excluir um ativo que já foi registrado em uma compra");
+				}
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
+		}
 	}
 
-	public Ativo pesquisar(String nome) {
+	public void pesquisar(String nome) {
 
-		Ativo a = new Ativo();
-
-		return a;
+		lista.clear();
+		try {
+			lista.addAll(dao.pesquisarPorNome(pesquisa.get()));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
+		}
 	}
 
 	public void limparCampos() {
@@ -165,7 +237,7 @@ public class AtivoController {
 		ticker.set("");
 		nome.set("");
 		tipo.set("");
-		valorCompra.set(null);
+		valorCompra.set(BigDecimal.ZERO);
 		pesquisa.set("");
 	}
 

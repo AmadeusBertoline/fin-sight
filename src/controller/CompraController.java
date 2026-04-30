@@ -1,9 +1,11 @@
 package controller;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import dao.CompraDAOImpl;
+
+import dao.compra.CompraDAOImpl;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -15,7 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.Ativo;
 import model.Compra;
-import util.Alerta;
+import view.components.Alerta;
 
 public class CompraController {
 
@@ -103,48 +105,103 @@ public class CompraController {
 
 	public void salvar(Compra c, String dataString, Ativo a) {
 
+		if (a == null) {
+			Alerta.erro("Validação", "Selecione um ativo para registrar a compra.");
+			return;
+		}
+
+		if (c.getQuantidade() == null || c.getQuantidade().compareTo(BigDecimal.ZERO) <= 0) {
+			Alerta.erro("Validação", "A quantidade deve ser maior que zero.");
+			return;
+		}
+
+		if (c.getValorPago() == null || c.getValorPago().compareTo(BigDecimal.ZERO) <= 0) {
+			Alerta.erro("Validação", "O valor unitário deve ser maior que zero.");
+			return;
+		}
+
+		if (quantidade.get() == null) {
+			Alerta.erro("Entrada Inválida",
+					"O campo Quantidade contém caracteres inválidos (como #). Use apenas números.");
+			return;
+		}
+
+		if (quantidade.get().compareTo(BigDecimal.ZERO) <= 0) {
+			Alerta.erro("Validação", "A quantidade deve ser maior que zero.");
+			return;
+		}
+
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 		try {
 			LocalDate data = LocalDate.parse(dataString, dtf);
 			c.setAtivo(a);
 			c.setDataCompra(data);
+
+			if (data.isAfter(LocalDate.now())) {
+				Alerta.erro("Validação", "A data da compra não pode ser uma data futura.");
+				return;
+			}
+
 		} catch (Exception e) {
-			System.out.println("Data inválida");
+			Alerta.erro("Validação", "Data inválida. Use o formato dd/mm/aaaa.");
+			return;
 		}
 
-		if (c.getId() == 0) {
-			dao.salvar(c);
-		} else {
-			dao.atualizar(c, c.getId());
+		try {
+			if (c.getId() == 0) {
+				dao.salvar(c);
+				Alerta.sucesso("Sucesso", "Compra registrada com sucesso!");
+			} else {
+				dao.atualizar(c, c.getId());
+				Alerta.sucesso("Sucesso", "Compra atualizada com sucesso!");
+			}
+			atualizarLista();
+			limparCampos();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
 		}
-
-		atualizarLista();
-		limparCampos();
 	}
 
 	public void excluir(int id) {
 
-		if (id > 0) {
+		try {
+			if (id > 0) {
 
-			boolean confirmou = Alerta.confirmar("Excluir compra", "Tem certeza de que deseja excluir essa compra?");
+				boolean confirmou = Alerta.confirmar("Excluir compra",
+						"Tem certeza de que deseja excluir essa compra?");
 
-			if (confirmou) {
-				dao.excluir(id);
-				Alerta.sucesso("Sucesso", "Compra removida com sucesso");
-				atualizarLista();
-				limparCampos();
+				if (confirmou) {
+					dao.excluir(id);
+					Alerta.sucesso("Sucesso", "Compra removida com sucesso");
+					atualizarLista();
+					limparCampos();
+				}
+
+			} else {
+				Alerta.erro("Erro", "Selecione uma compra válida para exclusão.");
 			}
 
-		} else {
-			Alerta.erro("Erro", "Compra inválida");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
 		}
 
 	}
 
 	public void atualizarLista() {
 		lista.clear();
-		lista.addAll(dao.listar());
+		try {
+			lista.addAll(dao.listar());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Não foi possível carregar a lista: " + e.getMessage());
+		}
 	}
 
 	public ObservableList<Compra> getLista() {
@@ -163,16 +220,34 @@ public class CompraController {
 
 	public void atualizar(Compra c, int id) {
 
-		dao.atualizar(c, id);
-		atualizarLista();
-		limparCampos();
+		if (c.getAtivo() == null || c.getQuantidade().compareTo(BigDecimal.ZERO) <= 0) {
+			Alerta.erro("Validação", "Dados insuficientes para atualizar a compra.");
+			return;
+		}
+
+		try {
+			dao.atualizar(c, id);
+			Alerta.sucesso("Sucesso", "Compra atualizada com sucesso!");
+			atualizarLista();
+			limparCampos();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
+		} catch (Exception e) {
+			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
+		}
 
 	}
 
 	public void busca() {
 
 		lista.clear();
-		lista.addAll(dao.busca(pesquisa.get()));
+		try {
+			lista.addAll(dao.busca(pesquisa.get()));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Alerta.erro("Erro de Banco", "Falha ao realizar a busca: " + e.getMessage());
+		}
 
 	}
 }

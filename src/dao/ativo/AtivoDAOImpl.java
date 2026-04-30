@@ -1,14 +1,13 @@
-package dao;
+package dao.ativo;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dao.connection.ConnectionFactory;
 import model.Ativo;
 
 public class AtivoDAOImpl implements AtivoDAO {
@@ -17,7 +16,7 @@ public class AtivoDAOImpl implements AtivoDAO {
 	Connection con = conexao.getConnection();
 
 	@Override
-	public void salvar(Ativo a) {
+	public void salvar(Ativo a) throws SQLException{
 
 		try {
 			String sql = "INSERT INTO ativos (ticker, nome_empresa, tipo, valor_unitario) " + "VALUES(?,?,?,?)";
@@ -30,13 +29,14 @@ public class AtivoDAOImpl implements AtivoDAO {
 			pst.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 	}
 
 	@Override
-	public List<Ativo> listar() {
+	public List<Ativo> listar() throws SQLException{
 
 		List<Ativo> ativos = new ArrayList<Ativo>();
 
@@ -59,14 +59,15 @@ public class AtivoDAOImpl implements AtivoDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.print(e.getMessage());
+			throw e;
 		}
 
 		return ativos;
 	}
 
 	@Override
-	public void atualizar(Ativo a, int id) {
+	public void atualizar(Ativo a, int id) throws SQLException{
 
 		try {
 			String sql = "UPDATE ativos SET nome_empresa=?, ticker=?, tipo=?, valor_unitario=? " + "WHERE id=?";
@@ -80,13 +81,15 @@ public class AtivoDAOImpl implements AtivoDAO {
 			pst.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
+		
 
 	}
 
 	@Override
-	public void excluir(int id) {
+	public void excluir(int id) throws SQLException{
 
 		try {
 			String sql = "DELETE FROM ativos WHERE id=?";
@@ -94,17 +97,18 @@ public class AtivoDAOImpl implements AtivoDAO {
 			pst.setInt(1, id);
 			pst.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 	}
 
 	@Override
-	public List<Ativo> pesquisarPorNome(String nome) {
+	public List<Ativo> pesquisarPorNome(String nome) throws SQLException{
 		List<Ativo> lista = new ArrayList<>();
 		try {
 
-			String sql = "SELECT * FROM ativos WHERE nome LIKE ?";
+			String sql = "SELECT * FROM ativos WHERE nome_empresa LIKE ?";
 			PreparedStatement pst = con.prepareStatement(sql);
 			pst.setString(1, "%" + nome + "%");
 			ResultSet res = pst.executeQuery();
@@ -124,7 +128,8 @@ public class AtivoDAOImpl implements AtivoDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 		return lista;
@@ -132,7 +137,7 @@ public class AtivoDAOImpl implements AtivoDAO {
 	}
 
 	@Override
-	public boolean ativoEmUso(int id) {
+	public boolean ativoEmUso(int id) throws SQLException{
 
 		try {
 
@@ -147,7 +152,8 @@ public class AtivoDAOImpl implements AtivoDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 		return false;

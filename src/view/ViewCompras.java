@@ -1,12 +1,13 @@
 package view;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import controller.CompraController;
-import dao.AtivoDAOImpl;
+import dao.ativo.AtivoDAOImpl;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Insets;
@@ -25,7 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import model.Ativo;
 import model.Compra;
-import util.Alerta;
+import view.components.Alerta;
 
 public class ViewCompras {
 
@@ -92,7 +93,13 @@ public class ViewCompras {
 
 		});
 
-		List<Ativo> listaDeAtivos = ativoDAO.listar();
+		List<Ativo> listaDeAtivos = null;
+		try {
+			listaDeAtivos = ativoDAO.listar();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		cbAtivos.getItems().addAll(listaDeAtivos);
 		txtValorCompra.setEditable(false);
 		txtValorCompra.setFocusTraversable(false);
@@ -148,12 +155,15 @@ public class ViewCompras {
 				new javafx.util.converter.BigDecimalStringConverter() {
 					@Override
 					public BigDecimal fromString(String value) {
-						if (value == null || value.isBlank())
-							return BigDecimal.ZERO;
+						try {
+							if (value == null || value.isBlank())
+								return BigDecimal.ZERO;
 
-						value = value.replace(",", ".");
-
-						return new BigDecimal(value);
+							String limpando = value.replace(",", ".");
+							return new BigDecimal(limpando);
+						} catch (NumberFormatException e) {
+							return null;
+						}
 					}
 				});
 

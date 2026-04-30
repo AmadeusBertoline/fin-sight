@@ -55,19 +55,41 @@
     -fx-padding: 10;
 }
 
-/* GRÁFICO */
+/* 📊 GRÁFICO E CORES FIXAS */
 .dashboard-root .chart {
     -fx-background-color: transparent;
+}
+
+.dashboard-root .chart-title {
+    -fx-text-fill: #e2e8f0;
 }
 
 .dashboard-root .chart-pie {
     -fx-border-color: transparent;
 }
 
+/* Cores fixas para as fatias (Slices) */
+.default-color0.chart-pie-slice { -fx-pie-color: #f59e0b; } /* Laranja */
+.default-color1.chart-pie-slice { -fx-pie-color: #10b981; } /* Verde */
+.default-color2.chart-pie-slice { -fx-pie-color: #3b82f6; } /* Azul */
+.default-color3.chart-pie-slice { -fx-pie-color: #8b5cf6; } /* Roxo */
+.default-color4.chart-pie-slice { -fx-pie-color: #f43f5e; } /* Rosa/Vermelho */
+
+/* Legenda */
 .dashboard-root .chart-legend {
     -fx-background-color: transparent;
+}
+
+.dashboard-root .chart-legend-item {
     -fx-text-fill: #e2e8f0;
 }
+
+/* Sincronização dos símbolos da legenda com as fatias */
+.chart-legend-item-symbol.default-color0 { -fx-background-color: #f59e0b; }
+.chart-legend-item-symbol.default-color1 { -fx-background-color: #10b981; }
+.chart-legend-item-symbol.default-color2 { -fx-background-color: #3b82f6; }
+.chart-legend-item-symbol.default-color3 { -fx-background-color: #8b5cf6; }
+.chart-legend-item-symbol.default-color4 { -fx-background-color: #f43f5e; }
 
 /* BOTÕES */
 .dashboard-root .button {

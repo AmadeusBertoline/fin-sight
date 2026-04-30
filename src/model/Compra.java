@@ -18,6 +18,9 @@ public class Compra {
 	}
 
 	public void setId(int id) {
+		if (id < 0) {
+			throw new IllegalArgumentException("Id inválido");
+		}
 		this.id = id;
 	}
 
@@ -26,6 +29,9 @@ public class Compra {
 	}
 
 	public void setDataCompra(LocalDate dataCompra) {
+		if (dataCompra == null || dataCompra.isAfter(LocalDate.now())) {
+			throw new IllegalArgumentException("Data inválida");
+		}
 		this.dataCompra = dataCompra;
 	}
 
@@ -34,6 +40,9 @@ public class Compra {
 	}
 
 	public void setValorCompra(BigDecimal valorCompra) {
+		if (valorCompra == null || valorCompra.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Valor de compra inválido");
+		}
 		this.valorCompra = valorCompra;
 	}
 
@@ -42,6 +51,9 @@ public class Compra {
 	}
 
 	public void setQuantidade(BigDecimal quantidade) {
+		if (quantidade == null || quantidade.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Quantidade inválida");
+		}
 		this.quantidade = quantidade;
 	}
 
@@ -50,6 +62,9 @@ public class Compra {
 	}
 
 	public void setAtivo(Ativo ativo) {
+		if (ativo == null) {
+			throw new IllegalArgumentException("Ativo inválido");
+		}
 		this.ativo = ativo;
 	}
 
@@ -58,28 +73,23 @@ public class Compra {
 	}
 
 	public void setValorPago(BigDecimal valorPago) {
+		if (valorPago == null || valorPago.compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Valor pago inválido");
+		}
 		this.valorPago = valorPago;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getId(), getAtivo(), getQuantidade(), getDataCompra(), getValorCompra(), getValorPago());
+		return Objects.hash(id);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Compra))
-			return false;
-
-		Compra obj = (Compra) o;
-
-		return getId() == obj.getId() && Objects.equals(getAtivo(), obj.getAtivo())
-				&& Objects.equals(getQuantidade(), obj.getQuantidade())
-				&& Objects.equals(getDataCompra(), obj.getDataCompra())
-				&& Objects.equals(getValorCompra(), obj.getValorCompra())
-				&& Objects.equals(getValorPago(), obj.getValorPago());
+		if (this == o) return true;
+		if (!(o instanceof Compra)) return false;
+		Compra compra = (Compra) o;
+		return id == compra.id;
 	}
 
 	@Override
@@ -91,7 +101,6 @@ public class Compra {
 		sb.append(getDataCompra()).append(" - ");
 		sb.append(getValorCompra()).append(" - ");
 		sb.append(getValorPago());
-
 		return sb.toString();
 	}
 }

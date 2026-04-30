@@ -1,11 +1,13 @@
-package dao;
+package dao.compra;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dao.connection.ConnectionFactory;
 import model.Ativo;
 import model.Compra;
 
@@ -15,7 +17,7 @@ public class CompraDAOImpl implements CompraDAO {
 	Connection con = conexao.getConnection();
 
 	@Override
-	public void salvar(Compra c) {
+	public void salvar(Compra c) throws SQLException{
 
 		try {
 
@@ -29,13 +31,14 @@ public class CompraDAOImpl implements CompraDAO {
 			pst.executeUpdate();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 	}
 
 	@Override
-	public List<Compra> listar() {
+	public List<Compra> listar() throws SQLException{
 
 		List<Compra> lista = new ArrayList<>();
 
@@ -68,14 +71,15 @@ public class CompraDAOImpl implements CompraDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 		return lista;
 	}
 
 	@Override
-	public void atualizar(Compra c, int id) {
+	public void atualizar(Compra c, int id) throws SQLException{
 
 		try {
 
@@ -91,13 +95,14 @@ public class CompraDAOImpl implements CompraDAO {
 			pst.executeUpdate();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 	}
 
 	@Override
-	public void excluir(int id) {
+	public void excluir(int id) throws SQLException{
 		
 		try {
 
@@ -107,7 +112,8 @@ public class CompraDAOImpl implements CompraDAO {
 			pst.executeUpdate();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 
 	}
@@ -115,7 +121,7 @@ public class CompraDAOImpl implements CompraDAO {
 	
 	
 	@Override
-	public List<Compra> busca(String nome){
+	public List<Compra> busca(String nome)throws SQLException{
 		
 		List<Compra> listaNomes = new ArrayList<>();
 		
@@ -150,7 +156,8 @@ public class CompraDAOImpl implements CompraDAO {
 			}
 			
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			throw e;
 		}
 		
 		return listaNomes;
