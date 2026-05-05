@@ -53,7 +53,8 @@ public class ViewCompras {
 		pane.setPadding(new Insets(20));
 		pane.setHgap(10);
 		pane.setVgap(10);
-		pane.setAlignment(Pos.CENTER);
+		pane.setAlignment(Pos.TOP_CENTER);
+		pane.setMaxWidth(420);
 
 		cbAtivos.setConverter(new javafx.util.StringConverter<Ativo>() {
 			@Override
@@ -103,7 +104,7 @@ public class ViewCompras {
 		cbAtivos.getItems().addAll(listaDeAtivos);
 		txtValorCompra.setEditable(false);
 		txtValorCompra.setFocusTraversable(false);
-		txtValorCompra.setStyle("-fx-background-color: #e0e0e0;");
+		txtValorCompra.getStyleClass().add("readonly");
 		txtValorUnitario.setEditable(false);
 		txtTipo.setEditable(false);
 		txtEmpresa.setEditable(false);
@@ -180,9 +181,21 @@ public class ViewCompras {
 					}
 				});
 
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		Bindings.bindBidirectional(txtDataCompra.textProperty(), control.dataCompraProperty(),
-				new javafx.util.converter.LocalDateStringConverter(DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-						DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+				new javafx.util.converter.LocalDateStringConverter(dtf, dtf) {
+					@Override
+					public LocalDate fromString(String value) {
+						try {
+							if (value == null || value.trim().isEmpty()) {
+								return null;
+							}
+							return LocalDate.parse(value, dtf);
+						} catch (java.time.format.DateTimeParseException e) {
+							return null;
+						}
+					}
+				});
 
 		Bindings.bindBidirectional(cbAtivos.valueProperty(), control.ativoProperty());
 		Bindings.bindBidirectional(txtEmpresa.textProperty(), control.empresaProperty());
@@ -291,8 +304,18 @@ public class ViewCompras {
 		BorderPane panePrincipal = new BorderPane();
 		panePrincipal.setTop(pane);
 		panePrincipal.setCenter(table);
+		BorderPane.setAlignment(pane, Pos.CENTER);
+		panePrincipal.setMargin(table, new Insets(20));
+		txtPesquisa.getStyleClass().add("search");
 
 		control.atualizarLista();
+
+		panePrincipal.getStyleClass().add("compras-root");
+
+		panePrincipal.getStylesheets().add(getClass().getResource("/css/compras.css").toExternalForm());
+
+		btnExcluir.getStyleClass().add("button-danger");
+		txtPesquisa.getStyleClass().add("search");
 
 		return panePrincipal;
 	}

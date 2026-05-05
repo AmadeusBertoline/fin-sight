@@ -1,0 +1,67 @@
+/* 🔥 TAB PANE ROOT */
+.tab-pane {
+    -fx-background-color: #0f172a;
+}
+
+/* REMOVE BORDA PADRÃO */
+.tab-pane .tab-header-area {
+    -fx-background-color: #020617;
+    -fx-padding: 5 10 0 10;
+}
+
+/* FUNDO DAS ABAS */
+.tab-pane .tab-header-background {
+    -fx-background-color: #020617;
+}
+
+/* ABA */
+.tab-pane .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8 8 0 0;
+    -fx-padding: 8 16;
+}
+
+/* REMOVE FOCO AZUL PADRÃO */
+.tab-pane {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* REMOVE FOCO NA ABA */
+.tab-pane .tab {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* TEXTO DA ABA */
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 13px;
+}
+
+/* HOVER */
+.tab-pane .tab:hover {
+    -fx-background-color: #1e293b;
+}
+
+/* ABA SELECIONADA */
+.tab-pane .tab:selected {
+    -fx-background-color: #1e293b;
+}
+
+/* TEXTO ABA ATIVA */
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-weight: bold;
+}
+
+/* CONTEÚDO */
+.tab-pane .tab-content-area {
+    -fx-background-color: #0f172a;
+    -fx-padding: 10;
+}
+
+/* REMOVE LINHA BRANCA CHATA */
+.tab-pane *.tab-header-area *.tab-header-background {
+    -fx-effect: none;
+}

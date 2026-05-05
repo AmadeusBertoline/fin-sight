@@ -1,0 +1,191 @@
+/* 🔥 ROOT */
+.compras-root {
+    -fx-background-color: #0f172a;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+/* 🔤 LABELS */
+.compras-root .label {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 13px;
+}
+
+/* 🧾 TEXTFIELDS */
+.compras-root .text-field {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #e2e8f0;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+    -fx-padding: 8;
+}
+
+.compras-root .text-field:focused {
+    -fx-effect: dropshadow(gaussian, #3b82f6, 5, 0.3, 0, 0);
+}
+
+/* Campo readonly igual ao resto */
+.dashboard-root .text-field {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #e2e8f0;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 8;
+}
+
+/* Campo desabilitado / não editável */
+.dashboard-root .text-field:disabled,
+.dashboard-root .text-field:focused:disabled,
+.dashboard-root .text-field:readonly {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #94a3b8;
+    -fx-opacity: 1;
+}
+
+
+
+.dashboard-root .text-field.readonly {
+    -fx-background-color: #172033;
+    -fx-text-fill: #94a3b8;
+}
+
+/* 🔒 CAMPOS DESABILITADOS */
+.compras-root .text-field:disabled,
+.compras-root .text-field[editable="false"] {
+    -fx-background-color: #020617;
+    -fx-text-fill: #94a3b8;
+}
+
+/* 🔽 COMBOBOX */
+.compras-root .combo-box {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+}
+
+.compras-root .combo-box .list-cell {
+    -fx-text-fill: #e2e8f0;
+    -fx-background-color: #1e293b;
+}
+
+.compras-root .combo-box-popup .list-view {
+    -fx-background-color: #1e293b;
+}
+
+.compras-root .combo-box:focused {
+    -fx-border-color: #3b82f6;
+}
+
+/* 🔘 BOTÕES */
+.compras-root .button {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+}
+
+.compras-root .button:hover {
+    -fx-background-color: #2563eb;
+}
+
+/* BOTÃO EXCLUIR */
+.compras-root .button-danger {
+    -fx-background-color: #334155;
+}
+
+.compras-root .button-danger:hover {
+    -fx-background-color: #1e293b;
+}
+
+/* 📊 TABLEVIEW */
+.compras-root .table-view {
+    -fx-background-color: #1e293b;
+    -fx-control-inner-background: #1e293b;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+/* HEADER */
+.compras-root .column-header-background {
+    -fx-background-color: #020617;
+}
+
+.compras-root .column-header,
+.compras-root .filler {
+    -fx-background-color: #020617;
+}
+
+.compras-root .column-header .label {
+    -fx-text-fill: #94a3b8;
+    -fx-font-weight: bold;
+}
+
+/* CELLS */
+.compras-root .table-cell {
+    -fx-text-fill: #e2e8f0;
+    -fx-padding: 10;
+}
+
+/* LINHAS */
+.compras-root .table-row-cell {
+    -fx-background-color: #1e293b;
+}
+
+.compras-root .table-row-cell:odd {
+    -fx-background-color: #172033;
+}
+
+.compras-root .table-row-cell:selected {
+    -fx-background-color: #3b82f6;
+}
+
+/* 🔍 CAMPO DE PESQUISA */
+.compras-root .text-field.search {
+    -fx-background-color: #020617;
+    -fx-border-color: #3b82f6;
+}
+
+/* 📦 FORMULÁRIO */
+.compras-root .grid-pane {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 12;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0.2, 0, 4);
+}
+
+/* 📦 FORMULÁRIO COMO CARD */
+.compras-root .grid-pane {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 12;
+    -fx-padding: 25;
+    -fx-max-width: 420;
+    -fx-hgap: 15;
+    -fx-vgap: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0.2, 0, 4);
+}
+
+/* 🔤 LABELS MAIS MODERNAS */
+.compras-root .grid-pane .label {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+}
+
+/* 🧾 INPUTS MELHORADOS */
+.compras-root .grid-pane .text-field {
+    -fx-background-color: #020617;
+    -fx-text-fill: #e2e8f0;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+}
+
+/* 🔽 COMBOBOX MAIS BONITO */
+.compras-root .grid-pane .combo-box {
+    -fx-background-color: #020617;
+    -fx-background-radius: 8;
+}
+
+/* 🔘 BOTÕES MAIS ALINHADOS */
+.compras-root .grid-pane .button {
+    -fx-background-radius: 10;
+}

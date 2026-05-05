@@ -42,7 +42,8 @@ public class ViewAtivos {
 		pane.setPadding(new Insets(20));
 		pane.setHgap(10);
 		pane.setVgap(10);
-		pane.setAlignment(Pos.CENTER);
+		pane.setAlignment(Pos.TOP_CENTER);
+		pane.setMaxWidth(400);
 
 		pane.add(new Label("Ticker:"), 0, 1);
 		pane.add(txtTicker, 1, 1);
@@ -53,7 +54,7 @@ public class ViewAtivos {
 		pane.add(new Label("Tipo:"), 0, 3);
 		pane.add(txtTipo, 1, 3);
 
-		pane.add(new Label("Valor da Compra:"), 0, 4);
+		pane.add(new Label("Valor do ativo:"), 0, 4);
 		pane.add(txtValorCompra, 1, 4);
 
 		pane.add(new Label("Pesquisar:"), 0, 6);
@@ -152,9 +153,19 @@ public class ViewAtivos {
 		BorderPane panePrincipal = new BorderPane();
 		panePrincipal.setTop(pane);
 		panePrincipal.setCenter(table);
-
+		panePrincipal.setMargin(table, new Insets(20));
+		BorderPane.setAlignment(pane, Pos.CENTER);
 		control.atualizarLista();
+		panePrincipal.getStyleClass().add("ativos-root");
 
+		panePrincipal.getStylesheets().add(
+		    getClass().getResource("/css/ativos.css").toExternalForm()
+		);
+		
+		btnExcluir.getStyleClass().add("button-danger");
+		txtPesquisa.getStyleClass().add("search");
+		pane.getStyleClass().add("form-card");
+		
 		return panePrincipal;
 	}
 

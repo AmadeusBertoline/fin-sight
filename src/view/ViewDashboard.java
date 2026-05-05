@@ -55,7 +55,7 @@ public class ViewDashboard {
 		root.getChildren().addAll(titulo, cards, content);
 
 		try {
-			root.getStylesheets().add(getClass().getResource("/resources/css/dashboard.css").toExternalForm());
+			root.getStylesheets().add(getClass().getResource("/css/dashboard.css").toExternalForm());
 		} catch (Exception e) {
 			System.err.println("Erro ao carregar CSS da Dashboard: " + e.getMessage());
 		}

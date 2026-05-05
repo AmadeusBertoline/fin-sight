@@ -40,8 +40,35 @@ public class ViewPrincipal extends Application {
 				dashboardController.carregarDados();
 			}
 		});
+		
+		tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+
+		    if (newTab != null && newTab.getContent() != null) {
+
+		        var content = newTab.getContent();
+
+		        content.setOpacity(0);
+		        content.setTranslateX(20);
+
+		        var fade = new javafx.animation.FadeTransition(
+		                javafx.util.Duration.millis(250), content);
+		        fade.setToValue(1);
+
+		        var slide = new javafx.animation.TranslateTransition(
+		                javafx.util.Duration.millis(250), content);
+		        slide.setFromX(20);
+		        slide.setToX(0);
+
+		        fade.play();
+		        slide.play();
+		    }
+		});
 
 		Scene scn = new Scene(tabPane, 1000, 700);
+		
+		scn.getStylesheets().add(
+			    getClass().getResource("/css/global.css").toExternalForm()
+			);
 
 		stage.setTitle("Carteira de Investimentos - Amadeus");
 		stage.setScene(scn);
