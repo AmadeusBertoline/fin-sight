@@ -124,4 +124,5 @@ Execute a aplicação pela sua IDE
 👨‍💻 Autor
 
 Amadeus Bertoline da Silva
+
 📌 Projeto desenvolvido com foco em evolução prática em Java, banco de dados e arquitetura de software
