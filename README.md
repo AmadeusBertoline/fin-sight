@@ -6,7 +6,7 @@ Aplicação desktop desenvolvida em JavaFX para controle de ativos financeiros e
 
 ## 📌 Sobre o Projeto
 
-O **FinSight** foi desenvolvido como um desafio técnico com o objetivo de consolidar conhecimentos em:
+O **FinSight** foi desenvolvido com o objetivo de consolidar conhecimentos em desenvolvimento backend com Java, integração com banco de dados e construção de interfaces desktop, simulando um sistema real de gestão de investimentos.
 
 - Integração entre **Java (JavaFX)** e **SQL (MariaDB)**
 - Aplicação de padrões de arquitetura (**MVC e DAO**)
@@ -54,6 +54,16 @@ A aplicação permite gerenciar uma carteira de investimentos (como ações e FI
 - ✔ Interface moderna em Dark Mode
 - ✔ Busca dinâmica de dados
 
+- ## 📚 Aprendizados
+
+Durante o desenvolvimento deste projeto, aprendi:
+
+- Aplicar bindings no JavaFX para reduzir código imperativo
+- Trabalhar com BigDecimal corretamente
+- Estruturar um CRUD com separação de responsabilidades
+- Utilizar triggers no banco para auditoria automática
+- Evoluir o código aplicando princípios SOLID na prática
+
 ### 🧠 Diferenciais técnicos
 
 - Uso de **Triggers** para automação de regras no banco
@@ -61,6 +71,13 @@ A aplicação permite gerenciar uma carteira de investimentos (como ações e FI
 - Utilização de **Cursores** para processamento de dados
 - Sistema de **log de auditoria** para rastreamento de alterações
 
+
+## 💡 Decisões técnicas
+
+- Uso de JavaFX com bindings para manter a UI reativa
+- Separação em camadas (View / Controller / DAO)
+- Aplicação inicial do princípio de inversão de dependência
+- Banco relacional com uso de triggers para auditoria
 ---
 
 ## 🗄️ Banco de Dados
@@ -134,8 +151,9 @@ Execute a aplicação pela sua IDE
 📜 Auditoria completa via triggers e tabela de logs
 🧠 Separação clara de responsabilidades (MVC)
 
-👨‍💻 Autor
 
-Amadeus Bertoline da Silva
+```md
+👨‍💻 **Autor**
 
-📌 Projeto desenvolvido com foco em evolução prática em Java, banco de dados e arquitetura de software
+Amadeus Bertoline da Silva  
+🔗 LinkedIn: https://www.linkedin.com/in/amadeus-bertoline-8432a6194/
