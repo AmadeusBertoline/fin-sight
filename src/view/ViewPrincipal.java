@@ -70,7 +70,7 @@ public class ViewPrincipal extends Application {
 			    getClass().getResource("/css/global.css").toExternalForm()
 			);
 
-		stage.setTitle("Carteira de Investimentos - Amadeus");
+		stage.setTitle("FinSight");
 		stage.setScene(scn);
 		stage.show();
 	}
