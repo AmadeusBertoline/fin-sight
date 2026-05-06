@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import dao.ativo.AtivoDAO;
-import dao.ativo.AtivoDAOImpl;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -27,7 +26,11 @@ public class AtivoController {
 	private final StringProperty pesquisa = new SimpleStringProperty();
 	private ObservableList<Ativo> lista = FXCollections.observableArrayList();
 
-	private AtivoDAO dao = new AtivoDAOImpl();
+	private AtivoDAO dao;
+
+	public AtivoController(AtivoDAO dao) {
+		this.dao = dao;
+	}
 
 	public IntegerProperty idProperty() {
 		return id;
@@ -57,47 +60,22 @@ public class AtivoController {
 		return pesquisa;
 	}
 
-	public String getTicker() {
-		return ticker.get();
-	}
-
-	public String getNome() {
-		return ticker.get();
-	}
-
-	public double getQuantidade() {
-		return Double.parseDouble(quantidade.get());
-	}
-
-	public BigDecimal getValorCompra() {
-		try {
-			return valorCompra.get();
-		} catch (Exception e) {
-			return BigDecimal.ZERO;
-		}
-	}
-
 	public Ativo paraEntidade() {
-
 		Ativo a = new Ativo();
 		a.setId(id.get());
 		a.setNome(nome.get());
 		a.setTipo(tipo.get());
 		a.setTicker(ticker.get());
 		a.setValorCompra(valorCompra.get());
-
 		return a;
-
 	}
 
 	public void paraTela(Ativo a) {
-
 		id.set(a.getId());
 		ticker.set(a.getTicker());
 		nome.set(a.getNome());
 		tipo.set(a.getTipo());
 		valorCompra.set((a.getValorCompra()));
-
 	}
 
 	public void salvar(Ativo a) {
@@ -156,19 +134,16 @@ public class AtivoController {
 		}
 
 		try {
-
 			dao.atualizar(a, id);
 			Alerta.sucesso("Sucesso", "Ativo atualizado com sucesso!");
 			atualizarLista();
 			limparCampos();
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			Alerta.erro("Erro de Banco", "Falha ao comunicar com o banco de dados: " + e.getMessage());
 		} catch (Exception e) {
 			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
 		}
-
 	}
 
 	public void atualizarLista() {
@@ -182,7 +157,6 @@ public class AtivoController {
 		} catch (Exception e) {
 			Alerta.erro("Erro Inesperado", "Ocorreu um erro sistêmico: " + e.getMessage());
 		}
-
 	}
 
 	public ObservableList<Ativo> getLista() {
@@ -201,7 +175,7 @@ public class AtivoController {
 			boolean confirmou = Alerta.confirmar("Excluir Ativo", "Tem certeza que deseja excluir o ativo?");
 
 			if (confirmou) {
-				if (dao.ativoEmUso(id) == false) {
+				if (!dao.ativoEmUso(id)) {
 					dao.excluir(id);
 					Alerta.sucesso("Sucesso", "Ativo removido com sucesso");
 					atualizarLista();
@@ -240,5 +214,4 @@ public class AtivoController {
 		valorCompra.set(BigDecimal.ZERO);
 		pesquisa.set("");
 	}
-
 }

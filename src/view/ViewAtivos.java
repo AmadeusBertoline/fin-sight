@@ -2,7 +2,6 @@ package view;
 
 import java.math.BigDecimal;
 import controller.AtivoController;
-import dao.ativo.AtivoDAOImpl;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,10 +30,13 @@ public class ViewAtivos {
 	private Button btnLimpar = new Button("Limpar");
 	private Button btnExcluir = new Button("Excluir");
 
-	AtivoController control = new AtivoController();
-	AtivoDAOImpl dao = new AtivoDAOImpl();
+	private AtivoController control;
 
 	private TableView<Ativo> table = new TableView<>();
+
+	public ViewAtivos(AtivoController control) {
+		this.control = control;
+	}
 
 	public Pane render() {
 
@@ -64,11 +66,9 @@ public class ViewAtivos {
 		pane.add(botoes, 1, 7);
 
 		txtPesquisa.textProperty().addListener((obs, antigo, novo) -> {
-
 			if (novo != null) {
 				control.pesquisar(novo);
 			}
-
 		});
 
 		Bindings.bindBidirectional(txtTicker.textProperty(), control.tickerProperty());
@@ -93,15 +93,12 @@ public class ViewAtivos {
 		Bindings.bindBidirectional(txtPesquisa.textProperty(), control.pesquisaProperty());
 
 		table.getSelectionModel().selectedItemProperty().addListener((obs, old, selecionado) -> {
-
 			if (selecionado != null) {
 				control.paraTela(selecionado);
 			}
-
 		});
 
 		btnSalvar.setOnAction(e -> {
-
 			Ativo a = control.paraEntidade();
 
 			if (a.getId() == 0) {
@@ -109,17 +106,13 @@ public class ViewAtivos {
 			} else {
 				control.atualizar(a, a.getId());
 			}
-
 		});
 
 		btnLimpar.setOnAction(e -> {
-
 			control.limparCampos();
-
 		});
 
 		btnExcluir.setOnAction(e -> {
-
 			Ativo selecionado = table.getSelectionModel().getSelectedItem();
 
 			if (selecionado != null) {
@@ -127,7 +120,6 @@ public class ViewAtivos {
 			} else {
 				Alerta.erro("Erro", "Selecione um ativo para excluir");
 			}
-
 		});
 
 		table.getColumns().clear();
@@ -168,5 +160,4 @@ public class ViewAtivos {
 		
 		return panePrincipal;
 	}
-
 }

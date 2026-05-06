@@ -1,6 +1,10 @@
 package view;
 
+import controller.AtivoController;
+import controller.CompraController;
 import controller.ControllerDashboard;
+import dao.ativo.AtivoDAOImpl;
+import dao.compra.CompraDAOImpl;
 import dao.dashboard.DashboarDAOImpl;
 import dao.dashboard.DashboardDAO;
 import javafx.application.Application;
@@ -14,8 +18,11 @@ public class ViewPrincipal extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 
-		ViewCompras viewCompras = new ViewCompras();
-		ViewAtivos viewAtivos = new ViewAtivos();
+		CompraController compraController = new CompraController(new CompraDAOImpl(), new AtivoDAOImpl());
+		AtivoController ativoController = new AtivoController(new AtivoDAOImpl());
+		
+		ViewCompras viewCompras = new ViewCompras(compraController);
+		ViewAtivos viewAtivos = new ViewAtivos(ativoController);
 		ViewDashboard viewDashboard = new ViewDashboard();
 
 		var rootDashboard = viewDashboard.render();
@@ -40,40 +47,36 @@ public class ViewPrincipal extends Application {
 				dashboardController.carregarDados();
 			}
 		});
-		
+
 		tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
 
-		    if (newTab != null && newTab.getContent() != null) {
+			if (newTab != null && newTab.getContent() != null) {
 
-		        var content = newTab.getContent();
+				var content = newTab.getContent();
 
-		        content.setOpacity(0);
-		        content.setTranslateX(20);
+				content.setOpacity(0);
+				content.setTranslateX(20);
 
-		        var fade = new javafx.animation.FadeTransition(
-		                javafx.util.Duration.millis(250), content);
-		        fade.setToValue(1);
+				var fade = new javafx.animation.FadeTransition(javafx.util.Duration.millis(250), content);
+				fade.setToValue(1);
 
-		        var slide = new javafx.animation.TranslateTransition(
-		                javafx.util.Duration.millis(250), content);
-		        slide.setFromX(20);
-		        slide.setToX(0);
+				var slide = new javafx.animation.TranslateTransition(javafx.util.Duration.millis(250), content);
+				slide.setFromX(20);
+				slide.setToX(0);
 
-		        fade.play();
-		        slide.play();
-		    }
+				fade.play();
+				slide.play();
+			}
 		});
 
 		Scene scn = new Scene(tabPane, 1000, 700);
-		
-		scn.getStylesheets().add(
-			    getClass().getResource("/css/global.css").toExternalForm()
-			);
-		
+
+		scn.getStylesheets().add(getClass().getResource("/css/global.css").toExternalForm());
+
 		tabCompras.setOnSelectionChanged(e -> {
-		    if (tabCompras.isSelected()) {
-		        viewCompras.atualizarComboAtivos();
-		    }
+			if (tabCompras.isSelected()) {
+				viewCompras.atualizarComboAtivos();
+			}
 		});
 
 		stage.setTitle("FinSight");

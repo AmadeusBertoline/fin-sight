@@ -140,26 +140,17 @@
     -fx-background-color: #3b82f6;
 }
 
-/* 🔍 CAMPO DE PESQUISA */
+/* 🔍 CAMPO DE PESQUISA  */
 .compras-root .text-field.search {
     -fx-background-color: #020617;
     -fx-border-color: #3b82f6;
 }
 
-/* 📦 FORMULÁRIO */
-.compras-root .grid-pane {
-    -fx-background-color: #1e293b;
-    -fx-background-radius: 12;
-    -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0.2, 0, 4);
-}
-
-/* 📦 FORMULÁRIO COMO CARD */
 .compras-root .grid-pane {
     -fx-background-color: #1e293b;
     -fx-background-radius: 12;
     -fx-padding: 25;
-    -fx-max-width: 420;
+    -fx-max-width: 600;
     -fx-hgap: 15;
     -fx-vgap: 12;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0.2, 0, 4);
@@ -177,6 +168,7 @@
     -fx-text-fill: #e2e8f0;
     -fx-background-radius: 8;
     -fx-padding: 10;
+    -fx-pref-height: 36;
 }
 
 /* 🔽 COMBOBOX MAIS BONITO */
