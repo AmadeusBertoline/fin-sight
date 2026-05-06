@@ -138,7 +138,7 @@ Crie o arquivo de configuração:
 
 resources/config/db.properties
 
-Adicione suas credenciais:
+Adicione suas credenciais (verifique a disponibilidade da porta 3306):
 
 db.url=jdbc:mariadb://localhost:3306/db_investimentos
 db.user=seu_usuario
