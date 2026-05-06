@@ -69,6 +69,12 @@ public class ViewPrincipal extends Application {
 		scn.getStylesheets().add(
 			    getClass().getResource("/css/global.css").toExternalForm()
 			);
+		
+		tabCompras.setOnSelectionChanged(e -> {
+		    if (tabCompras.isSelected()) {
+		        viewCompras.atualizarComboAtivos();
+		    }
+		});
 
 		stage.setTitle("FinSight");
 		stage.setScene(scn);

@@ -47,6 +47,17 @@ public class ViewCompras {
 	private CompraController control = new CompraController();
 	private AtivoDAOImpl ativoDAO = new AtivoDAOImpl();
 
+	public void atualizarComboAtivos() {
+		try {
+			List<Ativo> listaDeAtivos = ativoDAO.listar();
+			cbAtivos.getItems().setAll(listaDeAtivos);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+
 	public Pane render() {
 
 		GridPane pane = new GridPane();
@@ -211,6 +222,7 @@ public class ViewCompras {
 			} else {
 				control.atualizar(c, c.getId());
 			}
+
 
 		});
 

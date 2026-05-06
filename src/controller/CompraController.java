@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import dao.ativo.AtivoDAO;
 import dao.compra.CompraDAOImpl;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
@@ -29,6 +30,7 @@ public class CompraController {
 	private final ObjectProperty<BigDecimal> valorUnitario = new SimpleObjectProperty<>(BigDecimal.ZERO);
 	private final StringProperty empresa = new SimpleStringProperty("");
 	private final StringProperty pesquisa = new SimpleStringProperty("");
+
 
 	public CompraController() {
 
