@@ -27,6 +27,9 @@ A aplicação permite gerenciar uma carteira de investimentos (como ações e FI
 ### Compras
 ![Compras](./assets/compras.png)
 
+### Auditoria
+![Auditoria](./assets/auditoria.png)
+
 🎥 **Vídeo de demonstração:**  
 👉 [Assista ao funcionamento do sistema](./assets/demo.mp4)
 
