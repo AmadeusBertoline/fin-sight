@@ -73,15 +73,25 @@ O sistema utiliza recursos avançados do MariaDB para garantir robustez:
 
 ## 📁 Estrutura do Projeto
 FinSight/
+
 ├── src/
+
 │ ├── controller/ # Regras de negócio
+
 │ ├── dao/ # Acesso a dados (JDBC)
+
 │ ├── model/ # Entidades e validações
+
 │ └── view/ # Interface JavaFX
+
 ├── resources/
+
 │ ├── config/ # Configuração do banco (.properties)
+
 │ └── css/ # Estilos da interface
+
 ├── sql/ # Scripts do banco de dados
+
 └── README.md
 
 ---
